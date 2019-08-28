@@ -1,0 +1,116 @@
+//Constants
+$logoImageMaxHeight: 50px;
+$spacer: 8px;
+$primary: #008dc7;
+$lightBackground1: #e5e5e5;
+$lightBackground2: #c1c1c1;
+$darkBackground1: #b2b2b2;
+$darkBackground2: #8e8e8e;
+
+//Fonts
+.raleway-font-family {
+  font-family: "Raleway", sans-serif;
+}
+.description-font {
+  font-weight: 200 !important;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+//Text colors
+.white-color {
+  color: white !important;
+}
+
+.primary {
+  border-color: #008dc7 !important;
+  background-color: #008dc7 !important;
+}
+
+//Alignment
+.vertical-align-middle {
+  vertical-align: middle;
+}
+
+.right-align {
+  text-align: end;
+}
+
+.left-align {
+  text-align: start;
+}
+
+.user-options {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+}
+
+.align-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+//Floats
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.user-options {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+}
+
+//Cursors
+.link-cursor {
+  cursor: pointer !important;
+}
+
+//Misc
+.logo-image {
+  max-width: 100px;
+  max-height: $logoImageMaxHeight;
+}
+
+.top-bar {
+  border-top: 1px solid #d3d2d3;
+}
+
+.word-wrap-break {
+  word-wrap: break-word;
+}
+
+.display-inline {
+  display: inline;
+}
+
+.skill-badge {
+  height: 75px;
+  width: 75px;
+}
+
+//Animations
+@keyframes darkLoading {
+  from {
+    background-color: $darkBackground1;
+  }
+  to {
+    background-color: $darkBackground2;
+  }
+}
+
+@keyframes lightAnimation {
+  from {
+    background-color: $lightBackground1;
+  }
+  to {
+    background-color: $lightBackground2;
+  }
+}

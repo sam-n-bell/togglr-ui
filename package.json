@@ -1,0 +1,32 @@
+{
+    "name": "Togglr-UI",
+    "version": "1.0.0",
+    "description": "UI for Togglr.  Presents the user with an admin console for controlling feature flags.",
+    "author": "HEB Labs",
+    "private": true,
+    "scripts": {
+        "dev": "NODE_ENV=dev nuxt",
+        "build": "NODE_ENV=production nuxt build",
+        "start": "NODE_ENV=production nuxt start",
+        "generate": "nuxt generate",
+        "docker": "npm install && npm rebuild node-sass && npm run dev"
+    },
+    "dependencies": {
+        "@nuxtjs/axios": "^5.0.0",
+        "@nuxtjs/proxy": "^1.2.4",
+        "js-cookie": "^2.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "nuxt": "^1.4.2",
+        "qs": "^6.7.0",
+        "vee-validate": "^2.0.9",
+        "vue-clipboard2": "^0.3.0",
+        "vuetify": "^1.5.11"
+    },
+    "devDependencies": {
+        "cross-env": "^5.0.1",
+        "stylus": "^0.54.5",
+        "stylus-loader": "^3.0.1",
+        "node-sass": "^4.9.0",
+        "sass-loader": "^7.0.1"
+    }
+}
