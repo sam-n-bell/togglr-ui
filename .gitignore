@@ -13,11 +13,6 @@ dist
 # Intellij
 .idea
 
-.cloudbuild/*/*.dec
-
-# Secrets
-*.dec.*
-
 # VS Code Config
 .editorconfig
 
