@@ -1,0 +1,22 @@
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+
+# Intellij
+.idea
+
+# VS Code Config
+.editorconfig
+
+# temporary files
+output/
+df/
+target/
