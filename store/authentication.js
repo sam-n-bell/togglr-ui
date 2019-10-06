@@ -58,7 +58,11 @@ const actions = {
 
             commit("loginSuccess", user);
         } catch (error) {
-            commit("loginFailure", error.message);
+            if(error.response.status==401){
+              commit("loginFailure", "There was an error with your Username/Password combination. Please try again.");
+            } else {
+              commit("loginFailure", "An error occurred, please contact application support team.");
+            }
         }
 
     },
