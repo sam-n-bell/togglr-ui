@@ -23,9 +23,6 @@ const getters = {
 
         return !!state.user || !!token;
     },
-    getUserRole: state => {
-        return state.user === "r730819" ? "admin" : "manager";
-    },
     getUsernameIntial: state => {
         if (state.user) {
             return state.user.charAt(0).toUpperCase();
