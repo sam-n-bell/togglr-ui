@@ -65,7 +65,7 @@ export default {
   data: () => ({
     mini: false,
     appName: constants.systemConstants.appName,
-    drawer: true
+    drawer: false
   }),
   methods: {
     changeNavbar() {
