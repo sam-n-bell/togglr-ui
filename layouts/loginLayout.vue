@@ -14,10 +14,9 @@
       >
         <v-layout row wrap>
           <v-flex xs12 sm4 mt-1>
-            <span class="bottom-message-smaller">Copyright &#9400; 2019 H-E-B</span>
+            <span class="bottom-message">Feature Flag System</span>
           </v-flex>
           <v-flex xs12 sm4>
-            <span class="bottom-message">Feature Flag System</span>
           </v-flex>
           <v-flex xs12 sm4>
             <div class="mt-1">
@@ -93,4 +92,3 @@ export default {
   font-size: 15px;
 }
 </style>
-
