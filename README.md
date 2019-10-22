@@ -1,4 +1,5 @@
 # Togglr-UI
+<img src="assets/images/tglr-logo-color.svg" width="400" height="200" />
 
 UI for Togglr.  Presents the user with an admin console for controlling feature flags.  Users can create applications(dev, cert, prod, etc) which are searched based off application IDs.  Feature flags and configs are then added to an application to provide access to application features.
 
@@ -14,7 +15,7 @@ UI for Togglr.  Presents the user with an admin console for controlling feature 
 
 
 ## Code Style
-Beautify](https://marketplace.visualstudio.com/items?itemName=HookyQR.beautify) is used as a VSCode addon.  .jsbeautifyrc config file is included in the project.  You can enable auto format by going to extension settings for Beautify and adding the following config:
+[Beautify](https://marketplace.visualstudio.com/items?itemName=HookyQR.beautify) is used as a VSCode add-on. A .jsbeautifyrc config file is included in the project.  You can enable auto format by going to extension settings for Beautify and adding the following config:
 
 ```json
 "editor.formatOnSave": true
