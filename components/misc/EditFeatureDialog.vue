@@ -31,19 +31,18 @@
       </v-container>
 
       <v-divider></v-divider>
-
       <v-card v-for="key in editFeatureDialog.appDetails.keysById" :key="key.keyName">
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>
-            <v-flex xs12 @click="comboChanged(key.keyName)">
+            <v-flex xs12>
+              {{key}}
               <v-combobox
                 :append="null"
                 :data-vv-name="key.keyName"
                 :error-messages="errors.collect(key.keyName)"
                 v-model="configsById"
                 :label="key.keyName"
-                @focus="comboChanged(key.keyName)"
                 @click="comboChanged(key.keyName)"
                 :append-icon="null"
                 chips
@@ -93,7 +92,8 @@ export default {
     ruleSummary: "",
     configsLoaded: false,
     configsById: [],
-    currentKey: "Tst"
+    currentKey: "",
+    oldkey: ""
   }),
   computed: {
     editFeatureDialog() {
@@ -139,6 +139,8 @@ export default {
       this.ruleSummary = summary;
     },
     comboChanged(keyName) {
+      // old and current keys are used to make sure a new rule is applied to the right key
+      this.oldkey = this.currentKey;
       this.currentKey = keyName;
     },
     ...mapActions({
@@ -182,6 +184,16 @@ export default {
     },
     configsById: {
       handler(newConfigs, oldConfigs) {
+
+        // if condition to address case when user writes in one key, then clicks in another. 
+        // The new rule should be applied to the old key.
+        let keyToUpdate = "";
+        if (this.currentKey === this.oldkey || this.oldkey === "") {
+          keyToUpdate = this.currentKey;
+        } else {
+          keyToUpdate = this.oldkey;
+        }
+
         if (this.configsLoaded) {
           //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
@@ -192,12 +204,13 @@ export default {
               this.addConfig({
                 appId: this.editFeatureDialog.appDetails.id,
                 featureId: this.editFeatureDialog.feature.id,
-                keyName: this.currentKey,
+                keyName: keyToUpdate,
                 configValue: configToAdd[0]
               });
             }
           }
         }
+        this.oldkey = this.currentKey; // setting the keys to be same so that all future new rules will go to the current key
         this.configsLoaded = true;
         this.updateRuleSummary();
       }
