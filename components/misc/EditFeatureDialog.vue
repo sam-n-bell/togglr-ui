@@ -4,11 +4,11 @@
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
-    @keydown.esc="hideEditFeatureDialog"
+    @keydown.esc="resetKeyNameTrackers"
   >
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
-        <v-btn icon @click.native="hideEditFeatureDialog()">
+        <v-btn icon @click.native="resetKeyNameTrackers()">
           <!-- @keyup.esc="hideEditFeatureDialog()" -->
           <v-icon>close</v-icon>
         </v-btn>
@@ -29,7 +29,6 @@
           </v-flex>
         </v-layout>
       </v-container>
-
       <v-divider></v-divider>
       <v-card v-for="key in editFeatureDialog.appDetails.keysById" :key="key.keyName">
         <v-container fluid>
@@ -42,6 +41,7 @@
                 :error-messages="errors.collect(key.keyName)"
                 v-model="configsById"
                 :label="key.keyName"
+                @keyup="trackKeyFieldLastTypedIn(key.keyName)"
                 @click="comboChanged(key.keyName)"
                 :append-icon="null"
                 chips
@@ -92,7 +92,7 @@ export default {
     configsLoaded: false,
     configsById: [],
     currentKey: "",
-    oldkey: ""
+    lastKeyFieldEntered:""
   }),
   computed: {
     editFeatureDialog() {
@@ -103,6 +103,14 @@ export default {
     }
   },
   methods: {
+    resetKeyNameTrackers () {
+      this.currentKey = "";
+      this.lastKeyFieldEntered = "";
+      this.hideEditFeatureDialog();
+    },
+    trackKeyFieldLastTypedIn (keyName) {
+      this.lastKeyFieldEntered = keyName;
+    },
     deleteConfigClicked(keyName, item) {
       this.comboChanged(keyName);
       this.deleteConfig(item);
@@ -138,8 +146,6 @@ export default {
       this.ruleSummary = summary;
     },
     comboChanged(keyName) {
-      // old and current keys are used to make sure a new rule is applied to the right key
-      this.oldkey = this.currentKey;
       this.currentKey = keyName;
     },
     ...mapActions({
@@ -184,13 +190,11 @@ export default {
     configsById: {
       handler(newConfigs, oldConfigs) {
 
-        // if condition to address case when user writes in one key, then clicks in another. 
-        // The new rule should be applied to the old key.
-        let keyToUpdate = "";
-        if (this.currentKey === this.oldkey || this.oldkey === "") {
-          keyToUpdate = this.currentKey;
-        } else {
-          keyToUpdate = this.oldkey;
+        // below if condition handles scenario where user will type in one combobox and then click into another
+        // it makes sure the config is saved to the correct rule
+        let keyToUpdate = this.currentKey;
+        if (this.lastKeyFieldEntered !== this.currentKey) {
+          keyToUpdate = this.lastKeyFieldEntered
         }
 
         if (this.configsLoaded) {
@@ -209,8 +213,6 @@ export default {
             }
           }
         }
-        // setting the keys to be same so that all new rules after this will go to the current key until switching combos again
-        this.oldkey = this.currentKey; 
 
         this.configsLoaded = true;
         this.updateRuleSummary();
