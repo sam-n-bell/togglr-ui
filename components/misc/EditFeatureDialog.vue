@@ -36,7 +36,6 @@
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>
             <v-flex xs12>
-              {{key}}
               <v-combobox
                 :append="null"
                 :data-vv-name="key.keyName"
@@ -210,7 +209,9 @@ export default {
             }
           }
         }
-        this.oldkey = this.currentKey; // setting the keys to be same so that all future new rules will go to the current key
+        // setting the keys to be same so that all new rules after this will go to the current key until switching combos again
+        this.oldkey = this.currentKey; 
+
         this.configsLoaded = true;
         this.updateRuleSummary();
       }
