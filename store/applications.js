@@ -37,6 +37,16 @@ const state = () => ({
         loading: false,
         error: null
     },
+    applicationFeatures: {
+        payload: null,
+        loading: false,
+        error: null
+    },
+    applicationKeys: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     addFeature: {
         payload: null,
         loading: false,
@@ -183,6 +193,42 @@ const actions = {
             commit("addAdminSuccess", details);
         } catch (error) {
             commit("addAdminFailure", error.message);
+        }
+    },
+    async retrieveApplicationFeatures({
+        commit,
+        dispatch
+    }, appId, sortBy="descr", sortOrder="asc") {
+        commit("retrieveApplicationFeatures")
+        try {
+            const features = await this.$axios.$get(
+                `${constants.urlConstants.retrieveApplicationFeatures}${appId}&sort=${sortBy},${sortOrder}`
+            );
+            if (features._embedded && features._embedded.featureEntities) {
+                commit("retrieveApplicationFeaturesSuccess", features._embedded.featureEntities);
+            } else {
+                commit("retrieveApplicationFeaturesSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveApplicationFeaturesFailure", error.message);
+        }
+    },
+    async retrieveApplicationKeys({
+        commit,
+        dispatch
+    }, appId, sortBy="keyName", sortOrder="asc") {
+        commit("retrieveApplicationKeys")
+        try {
+            const keys = await this.$axios.$get(
+                `${constants.urlConstants.retrieveApplicationKeys}${appId}&sort=${sortBy},${sortOrder}`
+            );
+            if (keys._embedded && keys._embedded.keysEntities) {
+                commit("retrieveApplicationKeysSuccess", keys._embedded.keysEntities);
+            } else {
+                commit("retrieveApplicationKeysSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveApplicationKeysFailure", error.message);
         }
     },
     async addFeature({
@@ -366,6 +412,38 @@ const mutations = {
         state.myApps.payload = [];
         state.myApps.loading = false;
         state.myApps.error = error;
+    },
+    //Retrieve Application Features (for sorting purposes usually)
+    retrieveApplicationFeatures(state) {
+        state.applicationFeatures.payload = []
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = null;
+    },
+    retrieveApplicationFeaturesSuccess(state, features) {
+        state.applicationFeatures.payload = features;
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = null;
+    },
+    retrieveApplicationFeaturesFailure(state, error) {
+        state.applicationFeatures.payload = []
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = error;
+    },
+    //Retrieve Application Keys (for sorting purposes usually)
+    retrieveApplicationKeys(state) {
+        state.applicationKeys.payload = []
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = null;
+    },
+    retrieveApplicationKeysSuccess(state, features) {
+        state.applicationFeatures.payload = features;
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = null;
+    },
+    retrieveApplicationKeysFailure(state, error) {
+        state.applicationFeatures.payload = []
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = error;
     },
     //Create Application
     createApplication(state) {

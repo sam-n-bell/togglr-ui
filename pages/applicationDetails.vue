@@ -14,7 +14,7 @@
           <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2">
             <span class="text-xs-left">{{ appDetails.payload.id }}</span>
             <span class="float-right mr-1" @click="copyToClipboard(appDetails.payload.id)">
-              <v-icon>file_copy</v-icon>
+              <v-icon class="copy-icon">file_copy</v-icon>
             </span>
           </v-card>
 
@@ -48,7 +48,8 @@
 
           <span class="title mt-5">Features</span>
           <v-card flat>
-            <v-data-table :headers="featureHeaders" :items="appDetails.payload.featuresById">
+            <!-- <v-data-table :headers="featureHeaders" :items= "appDetails.payload.featuresById"> -->
+            <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.descr }}</td>
@@ -112,9 +113,11 @@
 
           <div class="buffer"></div>
 
+          <pre>{{applicationKeys}}</pre>
           <span class="title mt-5">Keys</span>
           <v-card flat>
-            <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById">
+            <!-- <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById"> -->
+            <v-data-table :headers="keyHeaders" :items="applicationKeys.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.keyName }}</td>
@@ -215,6 +218,8 @@ export default {
     } else {
       this.webhookUrl = this.storedApp.webhookUrl;
       this.retrieveApplicationDetails(this.storedApp.id);
+      this.retrieveApplicationFeatures(this.storedApp.id);
+      this.retrieveApplicationKeys(this.storedApp.id);
     }
   },
   data: () => ({
@@ -260,6 +265,12 @@ export default {
     },
     appDetails() {
       return this.$store.state.applications.appDetails;
+    },
+    applicationFeatures () {
+      return this.$store.state.applications.applicationFeatures;
+    },
+    applicationKeys () {
+      return this.$store.state.applications.applicationKeys;
     },
     deleteApplicationObject() {
       return this.$store.state.applications.deleteApplication;
@@ -354,6 +365,8 @@ export default {
     },
     ...mapActions({
       retrieveApplicationDetails: "applications/retrieveApplicationDetails",
+      retrieveApplicationFeatures: "applications/retrieveApplicationFeatures",
+      retrieveApplicationKeys: "applications/retrieveApplicationKeys",
       deleteApplication: "applications/deleteApplication",
       updateApplication: "applications/updateFeature",
       addAdmin: "applications/addAdmin",
@@ -446,5 +459,13 @@ export default {
 <style lang='scss' scoped>
 .buffer {
   height: 40px;
+}
+
+.copy-icon {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>

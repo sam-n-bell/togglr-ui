@@ -14,6 +14,8 @@ var urlConstants = Object.freeze({
     addApplicationPOST: `${baseURL}appEntities`,
     retrieveAppDetailsGET: `${baseURL}appEntities/`,
     deleteApplication: `${baseURL}appEntities/`,
+    retrieveApplicationFeatures: `${baseURL}featureEntities/search/findByAppId?appId=`,
+    retrieveApplicationKeys: `${baseURL}keysEntities/search/findByAppId?appId=`,
     updateFeature: `${baseURL}featureEntities/`,
     updateKey: `${baseURL}keysEntities/`,
     adminEntity: `${baseURL}adminsEntities/`,
