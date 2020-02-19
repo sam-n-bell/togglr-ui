@@ -10,11 +10,11 @@
       <v-card v-else-if="appDetails.payload">
         <EditFeatureDialog />
         <v-container fluid>
-          <span class="title">Application ID</span>
-          <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2">
-            <span class="text-xs-left">{{ appDetails.payload.id }}</span>
+          <span class="title" >Application ID</span>
+          <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2" >
+            <span class="text-xs-left"> {{ appDetails.payload.id }}</span>
             <span class="float-right mr-1" @click="copyToClipboard(appDetails.payload.id)">
-              <v-icon>file_copy</v-icon>
+              <v-icon class="copy-icon">file_copy</v-icon>
             </span>
           </v-card>
 
@@ -339,19 +339,38 @@ export default {
       this.deleteKey(this.appDetails.payload.keysById[index]);
     },
     copyToClipboard(textToCopy) {
+      console.log("Copied text... ")
+      console.log(textToCopy);
       this.$copyText(textToCopy);
       this.showSnackbar({
         text: `ID ${textToCopy} copied to clipboard`
       });
     },
+ selectText(textToCopy) {
+      console.log("Selected text... ")
+      console.log(textToCopy);
+      $selectText(textToCopy);
+    },
+
     updateWebhookEvent() {
-      let newDetails = {
+      try {
+        console.log("inside try");
+    new URL(this.webhookUrl);
+    console.log("valid url");
+    console.log(this.webhookUrl);
+    let newDetails = {
         id: this.appDetails.payload.id,
         webhookUrl: this.webhookUrl
       };
-
       this.updateWebhook(newDetails);
-    },
+  } catch (_) {
+    console.log("invalid url");
+    console.log(this.webhookUrl);
+      webhookUrl:' '
+  }
+}
+      
+    ,
     ...mapActions({
       retrieveApplicationDetails: "applications/retrieveApplicationDetails",
       deleteApplication: "applications/deleteApplication",
@@ -446,5 +465,14 @@ export default {
 <style lang='scss' scoped>
 .buffer {
   height: 40px;
+}
+.copy-icon{
+-webkit-user-select: none; /* Chrome/Safari */        
+-moz-user-select: none; /* Firefox */
+-ms-user-select: none; /* IE10+ */
+-khtml-user-select: none; /* webkit (konqueror) browsers */
+/* Rules below not implemented in browsers yet */
+-o-user-select: none;
+user-select: none;
 }
 </style>
