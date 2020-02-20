@@ -436,14 +436,14 @@ const mutations = {
         state.applicationKeys.error = null;
     },
     retrieveApplicationKeysSuccess(state, features) {
-        state.applicationFeatures.payload = features;
-        state.applicationFeatures.loading = false;
-        state.applicationFeatures.error = null;
+        state.applicationKeys.payload = features;
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = null;
     },
     retrieveApplicationKeysFailure(state, error) {
-        state.applicationFeatures.payload = []
-        state.applicationFeatures.loading = false;
-        state.applicationFeatures.error = error;
+        state.applicationKeys.payload = []
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = error;
     },
     //Create Application
     createApplication(state) {

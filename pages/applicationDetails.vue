@@ -112,8 +112,6 @@
           </v-card>
 
           <div class="buffer"></div>
-
-          <pre>{{applicationKeys}}</pre>
           <span class="title mt-5">Keys</span>
           <v-card flat>
             <!-- <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById"> -->
@@ -316,38 +314,42 @@ export default {
       }
       */
     },
-    addFeatureEvent() {
-      this.$validator.validate("featureName", this.featureName).then(res => {
+    async addFeatureEvent() {
+      this.$validator.validate("featureName", this.featureName).then(async res => {
         if (res) {
-          this.addFeature({
+          await this.addFeature({
             descr: this.featureName,
             appId: this.appDetails.payload.id,
             active: false,
             id: 0,
             negation: false
           });
+          await this.retrieveApplicationFeatures(this.storedApp.id);
           this.featureName = "";
           this.featureKey++;
         }
       });
     },
-    deleteFeatureEvent(index) {
-      this.deleteFeature(this.appDetails.payload.featuresById[index]);
+    async deleteFeatureEvent(index) {
+      await this.deleteFeature(this.appDetails.payload.featuresById[index]);
+      await this.retrieveApplicationFeatures(this.storedApp.id);
     },
-    addKeyEvent() {
-      this.$validator.validate("keyName", this.keyName).then(res => {
+    async addKeyEvent() {
+      this.$validator.validate("keyName", this.keyName).then(async res => {
         if (res) {
-          this.addKey({
+          await this.addKey({
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
+          await this.retrieveApplicationKeys(this.storedApp.id);
           this.keyName = "";
           this.keyKey++;
         }
       });
     },
-    deleteKeyEvent(index) {
-      this.deleteKey(this.appDetails.payload.keysById[index]);
+    async deleteKeyEvent(index) {
+      await this.deleteKey(this.appDetails.payload.keysById[index]);
+      await this.retrieveApplicationKeys(this.storedApp.id);
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);
