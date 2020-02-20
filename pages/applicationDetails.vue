@@ -222,12 +222,12 @@ export default {
   },
   data: () => ({
     featureHeaders: [
-      { text: "Feature", value: "descr", sortable: false },
-      { text: "Enabled", value: "enabled", sortable: false },
+      { text: "Feature", value: "descr", sortable: true },
+      { text: "Enabled", value: "enabled", sortable: true },
       { text: "Actions", align: "center", sortable: false }
     ],
     keyHeaders: [
-      { text: "Key", value: "keyName", sortable: false },
+      { text: "Key", value: "keyName", sortable: true },
       { text: "Actions", align: "center", sortable: false }
     ],
     admins: [],
