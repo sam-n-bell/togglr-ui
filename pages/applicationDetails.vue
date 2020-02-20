@@ -48,7 +48,6 @@
 
           <span class="title mt-5">Features</span>
           <v-card flat>
-            <!-- <v-data-table :headers="featureHeaders" :items= "appDetails.payload.featuresById"> -->
             <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -114,7 +113,6 @@
           <div class="buffer"></div>
           <span class="title mt-5">Keys</span>
           <v-card flat>
-            <!-- <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById"> -->
             <v-data-table :headers="keyHeaders" :items="applicationKeys.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
