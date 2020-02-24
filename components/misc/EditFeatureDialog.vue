@@ -4,11 +4,11 @@
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
-    @keydown.esc="resetKeyNameTrackers"
+    @keydown.esc="resetKeyNameTrackersHideDialog"
   >
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
-        <v-btn icon @click.native="resetKeyNameTrackers()">
+        <v-btn icon @click.native="resetKeyNameTrackersHideDialog()">
           <!-- @keyup.esc="hideEditFeatureDialog()" -->
           <v-icon>close</v-icon>
         </v-btn>
@@ -103,7 +103,7 @@ export default {
     }
   },
   methods: {
-    resetKeyNameTrackers () {
+    resetKeyNameTrackersHideDialog () {
       this.currentKey = "";
       this.lastKeyFieldEntered = "";
       this.hideEditFeatureDialog();
