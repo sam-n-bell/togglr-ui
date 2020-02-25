@@ -17,8 +17,7 @@
         <v-toolbar-items>
           <v-btn flat @click.native="hideEditFeatureDialog()">Save</v-btn>
         </v-toolbar-items>-->
-      </v-toolbar>
-
+      </v-toolbar>{{featureConfigs}}
       <v-container fluid>
         <v-layout row wrap>
           <v-flex xs12>Rule Summary</v-flex>
@@ -122,29 +121,59 @@ export default {
     updateRuleSummary() {
       var summary = "";
 
+      // this.editFeatureDialog.appDetails.keysById.forEach(key => {
+      //   if (
+      //     this.editFeatureDialog.configsById &&
+      //     this.editFeatureDialog.feature != null &&
+      //     this.editFeatureDialog.feature.negation !== undefined
+      //   ) {
+      //     var configs = this.editFeatureDialog.configsById.filter(
+      //       config => config.keyName == key.keyName
+      //     );
+
+      //     if (configs.length > 0) {
+      //       configs.forEach(config => {
+      //         summary += key.keyName + " " + config.configValue + ", ";
+      //       });
+
+      //       summary = summary.substring(0, summary.length - 2);
+
+      //       summary += this.editFeatureDialog.feature.negation
+      //         ? " will not have access."
+      //         : " will have access.";
+      //       summary += "\n";
+      //     }
+      //   }
+      // });
+
       this.editFeatureDialog.appDetails.keysById.forEach(key => {
         if (
-          this.editFeatureDialog.configsById &&
+          this.applicationFeatureConfigs &&
           this.editFeatureDialog.feature != null &&
           this.editFeatureDialog.feature.negation !== undefined
         ) {
-          var configs = this.editFeatureDialog.configsById.filter(
+          // for each key, match configs to keys based on the keyName in both properties
+          let configs = this.applicationFeatureConfigs.payload.filter(
             config => config.keyName == key.keyName
-          );
+          )
 
           if (configs.length > 0) {
             configs.forEach(config => {
               summary += key.keyName + " " + config.configValue + ", ";
             });
 
-            summary = summary.substring(0, summary.length - 2);
+            summary = summary.substring(0, summary.length - 2); // - 2 removes the last ',<space>'
 
-            summary += this.editFeatureDialog.feature.negation
-              ? " will not have access."
-              : " will have access.";
+            summary += this.editFeatureDialog.feature.negation 
+            ? " will not have access."
+            : " will have access.";
             summary += "\n";
-          }
+
+          } 
+
+          console.log(summary);
         }
+        
       });
 
       this.ruleSummary = summary;
@@ -183,7 +212,7 @@ export default {
           this.configsLoaded = false;
         }
 
-        this.updateRuleSummary();
+        // this.updateRuleSummary();
       },
       deep: true
     },
@@ -192,6 +221,8 @@ export default {
         if (object.payload) {
           this.featureConfigs = object.payload;
         }
+
+        this.updateRuleSummary();
       }, 
       deep: true
     },
