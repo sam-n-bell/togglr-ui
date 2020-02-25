@@ -42,6 +42,11 @@ const state = () => ({
         loading: false,
         error: null
     },
+    applicationFeatureConfigs: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     applicationKeys: {
         payload: null,
         loading: false,
@@ -211,6 +216,25 @@ const actions = {
             }
         } catch (error) {
             commit("retrieveApplicationFeaturesFailure", error.message);
+        }
+    },
+    async retrieveConfigsByApplicationAndFeature({
+        commit,
+        dispatch
+    }, payload) {
+        commit("retrieveConfigsByApplicationAndFeature")
+        try {
+            console.log(payload)
+            const configs = await this.$axios.$get(
+                `${constants.urlConstants.retrieveConfigsByApplicationAndFeature}${payload.appId}&featureId=${payload.featureId}`
+            );
+            if (configs._embedded && configs._embedded.configsEntities) {
+                commit("retrieveConfigsByApplicationAndFeatureSuccess", configs._embedded.configsEntities);
+            } else {
+                commit("retrieveConfigsByApplicationAndFeatureSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveConfigsByApplicationAndFeatureFailure", error.message);
         }
     },
     async retrieveApplicationKeys({
@@ -428,6 +452,21 @@ const mutations = {
         state.applicationFeatures.payload = []
         state.applicationFeatures.loading = false;
         state.applicationFeatures.error = error;
+    },
+    retrieveConfigsByApplicationAndFeature(state) {
+        state.applicationFeatureConfigs.payload = []
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = null;
+    },
+    retrieveConfigsByApplicationAndFeatureSuccess(state, configs) {
+        state.applicationFeatureConfigs.payload = configs;
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = null;
+    },
+    retrieveConfigsByApplicationAndFeatureFailure(state, error) {
+        state.applicationFeatureConfigs.payload = []
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = error;
     },
     //Retrieve Application Keys (for sorting purposes usually)
     retrieveApplicationKeys(state) {

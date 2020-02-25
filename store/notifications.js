@@ -108,6 +108,8 @@ const mutations = {
         state.timeout = 2000;
     },
     showEditFeatureDialog(state, appConfig) {
+        console.log('appconfig is')
+        console.log(appConfig)
         state.editFeatureDialog.showing = true;
         state.editFeatureDialog.feature = appConfig.feature;
         state.editFeatureDialog.appDetails = appConfig.app;

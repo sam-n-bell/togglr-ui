@@ -39,7 +39,7 @@
                 :append="null"
                 :data-vv-name="key.keyName"
                 :error-messages="errors.collect(key.keyName)"
-                v-model="configsById"
+                v-model="featureConfigs"
                 :label="key.keyName"
                 @keyup="trackKeyFieldLastTypedIn(key.keyName)"
                 @click="comboChanged(key.keyName)"
@@ -91,6 +91,7 @@ export default {
     ruleSummary: "",
     configsLoaded: false,
     configsById: [],
+    featureConfigs: [],
     currentKey: "",
     lastKeyFieldEntered:""
   }),
@@ -100,6 +101,9 @@ export default {
     },
     deleteConfigObject() {
       return this.$store.state.applications.deleteConfig;
+    },
+    applicationFeatureConfigs() {
+      return this.$store.state.applications.applicationFeatureConfigs;
     }
   },
   methods: {
@@ -153,7 +157,8 @@ export default {
       addConfig: "applications/addConfig",
       deleteConfig: "applications/deleteConfig",
       toggleFeatureNegation: "notifications/toggleFeatureNegation",
-      showSnackbar: "notifications/showSnackbar"
+      showSnackbar: "notifications/showSnackbar",
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature"
     })
   },
   watch: {
@@ -169,12 +174,25 @@ export default {
           }
         }
 
+
+        if (object.feature && object.feature.id) {
+          this.retrieveConfigsByApplicationAndFeature({appId: object.appDetails.id, featureId: object.feature.id})
+        }
+
         if (!object.showing) {
           this.configsLoaded = false;
         }
 
         this.updateRuleSummary();
       },
+      deep: true
+    },
+    applicationFeatureConfigs: {
+      handler (object) {
+        if (object.payload) {
+          this.featureConfigs = object.payload;
+        }
+      }, 
       deep: true
     },
     deleteConfigObject: {

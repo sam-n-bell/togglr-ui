@@ -16,6 +16,7 @@ var urlConstants = Object.freeze({
     deleteApplication: `${baseURL}appEntities/`,
     retrieveApplicationFeatures: `${baseURL}featureEntities/search/findByAppId?appId=`,
     retrieveApplicationKeys: `${baseURL}keysEntities/search/findByAppId?appId=`,
+    retrieveConfigsByApplicationAndFeature: `${baseURL}configsEntities/search/findByAppIdAndFeatureId?appId=`,
     updateFeature: `${baseURL}featureEntities/`,
     updateKey: `${baseURL}keysEntities/`,
     adminEntity: `${baseURL}adminsEntities/`,

@@ -50,6 +50,7 @@
           <v-card flat>
             <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
+                {{props.item}}
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.descr }}</td>
                   <td>
