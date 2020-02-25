@@ -103,6 +103,9 @@ export default {
     },
     applicationFeatureConfigs() {
       return this.$store.state.applications.applicationFeatureConfigs;
+    },
+    applicationKeys () {
+      return this.$store.state.applications.applicationKeys;
     }
   },
   methods: {
@@ -128,25 +131,8 @@ export default {
       //     this.editFeatureDialog.feature.negation !== undefined
       //   ) {
       //     var configs = this.editFeatureDialog.configsById.filter(
-      //       config => config.keyName == key.keyName
-      //     );
 
-      //     if (configs.length > 0) {
-      //       configs.forEach(config => {
-      //         summary += key.keyName + " " + config.configValue + ", ";
-      //       });
-
-      //       summary = summary.substring(0, summary.length - 2);
-
-      //       summary += this.editFeatureDialog.feature.negation
-      //         ? " will not have access."
-      //         : " will have access.";
-      //       summary += "\n";
-      //     }
-      //   }
-      // });
-
-      this.editFeatureDialog.appDetails.keysById.forEach(key => {
+      this.applicationKeys.payload.forEach(key => {
         if (
           this.applicationFeatureConfigs &&
           this.editFeatureDialog.feature != null &&
@@ -170,12 +156,8 @@ export default {
             summary += "\n";
 
           } 
-
-          console.log(summary);
-        }
-        
+        }        
       });
-
       this.ruleSummary = summary;
     },
     comboChanged(keyName) {
@@ -206,6 +188,7 @@ export default {
 
         if (object.feature && object.feature.id) {
           this.retrieveConfigsByApplicationAndFeature({appId: object.appDetails.id, featureId: object.feature.id})
+          this.configsLoaded = false;
         }
 
         if (!object.showing) {
@@ -261,6 +244,46 @@ export default {
               });
             }
           }
+        }
+
+        // this.configsLoaded = true;
+        // this.updateRuleSummary();
+      }
+    },
+    featureConfigs: {
+      handler(newConfigs, oldConfigs) {
+
+        // below if condition handles scenario where user will type in one combobox and then click into another
+        // it makes sure the config is saved to the correct rule
+        let keyToUpdate = this.currentKey;
+        if (this.lastKeyFieldEntered !== this.currentKey) {
+          keyToUpdate = this.lastKeyFieldEntered
+        }
+
+        console.log('new');
+        console.log(newConfigs);
+        console.log('old');
+        console.log(oldConfigs);
+        console.log(this.configsLoaded);
+
+        if (this.configsLoaded) {
+          console.log('i want to add')
+          //Adding an admin
+          if (newConfigs.length > oldConfigs.length) {
+            var configToAdd = newConfigs.filter(
+              config => !oldConfigs.includes(config)
+            );
+            // if (configToAdd.length > 0) {
+            //   this.addConfig({
+            //     appId: this.editFeatureDialog.appDetails.id,
+            //     featureId: this.editFeatureDialog.feature.id,
+            //     keyName: keyToUpdate,
+            //     configValue: configToAdd[0]
+            //   });
+            // }
+          }
+        } else {
+          console.log('i dont want to add')
         }
 
         this.configsLoaded = true;
