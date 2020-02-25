@@ -392,9 +392,9 @@ const actions = {
                 constants.urlConstants.configsEntity + config["appId"].toString() + "_" + config.keyName + "_" + config.featureId + "_" + config.configValue
             );
             commit("deleteConfigSuccess", config);
-            // dispatch("notifications/editFeatureConfigDeleted", config, {
-            //     root: true
-            // });
+            dispatch("notifications/editFeatureConfigDeleted", config, {
+                root: true
+            });
         } catch (error) {
             commit("deleteConfigFailure", error.message);
         }

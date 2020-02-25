@@ -117,10 +117,11 @@ export default {
     trackKeyFieldLastTypedIn (keyName) {
       this.lastKeyFieldEntered = keyName;
     },
-    deleteConfigClicked(keyName, item) {
+    async deleteConfigClicked(keyName, item) {
       console.log(`keyname: ${keyName}, item: ${item}`)
       this.comboChanged(keyName);
-      this.deleteConfig(item);
+      await this.deleteConfig(item);
+      await this.retrieveConfigsByApplicationAndFeature({appId: this.editFeatureDialog.appDetails.id, featureId: this.editFeatureDialog.feature.id});
     },
     updateRuleSummary() {
       var summary = "";
