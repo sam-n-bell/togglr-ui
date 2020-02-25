@@ -224,7 +224,6 @@ const actions = {
     }, payload) {
         commit("retrieveConfigsByApplicationAndFeature")
         try {
-            console.log(payload)
             const configs = await this.$axios.$get(
                 `${constants.urlConstants.retrieveConfigsByApplicationAndFeature}${payload.appId}&featureId=${payload.featureId}`
             );
@@ -388,13 +387,14 @@ const actions = {
     }, config) {
         commit("deleteConfig");
         try {
+            console.log(config);
             const details = await this.$axios.$delete(
                 constants.urlConstants.configsEntity + config["appId"].toString() + "_" + config.keyName + "_" + config.featureId + "_" + config.configValue
             );
             commit("deleteConfigSuccess", config);
-            dispatch("notifications/editFeatureConfigDeleted", config, {
-                root: true
-            });
+            // dispatch("notifications/editFeatureConfigDeleted", config, {
+            //     root: true
+            // });
         } catch (error) {
             commit("deleteConfigFailure", error.message);
         }

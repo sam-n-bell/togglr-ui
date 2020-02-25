@@ -118,6 +118,7 @@ export default {
       this.lastKeyFieldEntered = keyName;
     },
     deleteConfigClicked(keyName, item) {
+      console.log(`keyname: ${keyName}, item: ${item}`)
       this.comboChanged(keyName);
       this.deleteConfig(item);
     },
@@ -188,7 +189,6 @@ export default {
 
         if (object.feature && object.feature.id) {
           this.retrieveConfigsByApplicationAndFeature({appId: object.appDetails.id, featureId: object.feature.id})
-          this.configsLoaded = false;
         }
 
         if (!object.showing) {
@@ -203,6 +203,7 @@ export default {
       handler (object) {
         if (object.payload) {
           this.featureConfigs = object.payload;
+          this.configsLoaded = false;
         }
 
         this.updateRuleSummary();
@@ -251,7 +252,7 @@ export default {
       }
     },
     featureConfigs: {
-      handler(newConfigs, oldConfigs) {
+      async handler(newConfigs, oldConfigs) {
 
         // below if condition handles scenario where user will type in one combobox and then click into another
         // it makes sure the config is saved to the correct rule
@@ -260,12 +261,6 @@ export default {
           keyToUpdate = this.lastKeyFieldEntered
         }
 
-        console.log('new');
-        console.log(newConfigs);
-        console.log('old');
-        console.log(oldConfigs);
-        console.log(this.configsLoaded);
-
         if (this.configsLoaded) {
           console.log('i want to add')
           //Adding an admin
@@ -273,18 +268,17 @@ export default {
             var configToAdd = newConfigs.filter(
               config => !oldConfigs.includes(config)
             );
-            // if (configToAdd.length > 0) {
-            //   this.addConfig({
-            //     appId: this.editFeatureDialog.appDetails.id,
-            //     featureId: this.editFeatureDialog.feature.id,
-            //     keyName: keyToUpdate,
-            //     configValue: configToAdd[0]
-            //   });
-            // }
+            if (configToAdd.length > 0) {
+              await this.addConfig({
+                appId: this.editFeatureDialog.appDetails.id,
+                featureId: this.editFeatureDialog.feature.id,
+                keyName: keyToUpdate,
+                configValue: configToAdd[0]
+              });
+              await this.retrieveConfigsByApplicationAndFeature({appId: this.editFeatureDialog.appDetails.id, featureId: this.editFeatureDialog.feature.id});
+            }
           }
-        } else {
-          console.log('i dont want to add')
-        }
+        } 
 
         this.configsLoaded = true;
         this.updateRuleSummary();
