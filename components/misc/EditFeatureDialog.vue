@@ -30,7 +30,7 @@
         </v-layout>
       </v-container>
       <v-divider></v-divider>
-      <v-card v-for="key in editFeatureDialog.appDetails.keysById" :key="key.keyName">
+        <v-card v-for="key in applicationKeys.payload" :key="key.keyName">
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>

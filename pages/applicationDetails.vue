@@ -323,42 +323,41 @@ export default {
       }
       */
     },
-    async addFeatureEvent() {
+    addFeatureEvent() {
       this.$validator.validate("featureName", this.featureName).then(async res => {
         if (res) {
-          await this.addFeature({
+          this.addFeature({
             descr: this.featureName,
             appId: this.appDetails.payload.id,
             active: false,
             id: 0,
             negation: false
           });
-          await this.retrieveApplicationFeatures(this.storedApp.id);
+          // await this.retrieveApplicationFeatures(this.storedApp.id);
           this.featureName = "";
           this.featureKey++;
         }
       });
     },
-    async deleteFeatureEvent(index) {
-      await this.deleteFeature(this.appDetails.payload.featuresById[index]);
-      await this.retrieveApplicationFeatures(this.storedApp.id);
+    deleteFeatureEvent(index) {
+      this.deleteFeature(this.appDetails.payload.featuresById[index]);
+      // await this.retrieveApplicationFeatures(this.storedApp.id);
     },
-    async addKeyEvent() {
+    addKeyEvent() {
       this.$validator.validate("keyName", this.keyName).then(async res => {
         if (res) {
           await this.addKey({
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
-          await this.retrieveApplicationKeys(this.storedApp.id);
+          // await this.retrieveApplicationKeys(this.storedApp.id);
           this.keyName = "";
           this.keyKey++;
         }
       });
     },
-    async deleteKeyEvent(index) {
-      await this.deleteKey(this.appDetails.payload.keysById[index]);
-      await this.retrieveApplicationKeys(this.storedApp.id);
+    deleteKeyEvent(index) {
+      this.deleteKey(this.appDetails.payload.keysById[index]);
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);

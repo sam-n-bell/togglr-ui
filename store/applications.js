@@ -611,9 +611,8 @@ const mutations = {
         if (response.configsById === undefined) {
             response.configsById = [];
         }
-
         state.addFeature.payload = response;
-        state.appDetails.payload.featuresById.push(response);
+        state.applicationFeatures.payload.push(response);
         state.addFeature.loading = false;
         state.addFeature.error = null;
     },
@@ -629,12 +628,12 @@ const mutations = {
         state.deleteFeature.error = null;
     },
     deleteFeatureSuccess(state, filter) {
-        var index = state.appDetails.payload.featuresById.findIndex(
+        let index = state.applicationFeatures.payload.findIndex(
             feature => feature.id === filter.id
-        );
+        )
 
         if (index > -1) {
-            state.appDetails.payload.featuresById.splice(index, 1);
+            state.applicationFeatures.payload.splice(index, 1);
         }
 
         state.deleteFeature.payload = filter;
@@ -653,12 +652,12 @@ const mutations = {
         state.deleteFeature.error = null;
     },
     deleteKeySuccess(state, filter) {
-        var index = state.appDetails.payload.keysById.findIndex(
+        let index = state.applicationKeys.payload.findIndex(
             key => key.keyName === filter.keyName
-        );
+        )
 
         if (index > -1) {
-            state.appDetails.payload.keysById.splice(index, 1);
+            state.applicationKeys.payload.splice(index, 1);
         }
 
         state.deleteFeature.payload = filter;
@@ -719,7 +718,7 @@ const mutations = {
     },
     addKeySuccess(state, response) {
         state.addKey.payload = response;
-        state.appDetails.payload.keysById.push(response);
+        state.applicationKeys.payload.push(response);
         state.addKey.loading = false;
         state.addKey.error = null;
     },
