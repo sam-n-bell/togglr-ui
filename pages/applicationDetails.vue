@@ -60,12 +60,19 @@
                     ></v-switch>
                   </td>
                   <td class="text-xs-center">
-                    <v-btn
+                    <!-- <v-btn
                       slot="activator"
                       flat
                       color="primary"
                       class="pa-0 ma-0"
                       @click="showEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
+                    > -->
+                    <v-btn
+                      slot="activator"
+                      flat
+                      color="primary"
+                      class="pa-0 ma-0"
+                      @click="openEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
                     >
                       <v-icon>edit</v-icon>
                     </v-btn>
@@ -282,6 +289,10 @@ export default {
     })
   },
   methods: {
+    async openEditFeatureDialog(appAndFeatureObjects) {
+      await this.showEditFeatureDialog({ app: appAndFeatureObjects.app, feature: appAndFeatureObjects.feature });
+      await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id})
+    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;
@@ -378,7 +389,8 @@ export default {
       showSnackbar: "notifications/showSnackbar",
       showEditFeatureDialog: "notifications/showEditFeatureDialog",
       showConfirmCancelDialog: "notifications/showConfirmCancelDialog",
-      updateWebhook: "applications/updateWebhook"
+      updateWebhook: "applications/updateWebhook",
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
     })
   },
   watch: {

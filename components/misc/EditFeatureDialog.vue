@@ -17,7 +17,8 @@
         <v-toolbar-items>
           <v-btn flat @click.native="hideEditFeatureDialog()">Save</v-btn>
         </v-toolbar-items>-->
-      </v-toolbar>{{featureConfigs}}
+      </v-toolbar>
+      <br/>
       <v-container fluid>
         <v-layout row wrap>
           <v-flex xs12>Rule Summary</v-flex>
@@ -117,31 +118,21 @@ export default {
     trackKeyFieldLastTypedIn (keyName) {
       this.lastKeyFieldEntered = keyName;
     },
-    async deleteConfigClicked(keyName, item) {
-      console.log(`keyname: ${keyName}, item: ${item}`)
+    deleteConfigClicked(keyName, item) {
       this.comboChanged(keyName);
-      await this.deleteConfig(item);
-      await this.retrieveConfigsByApplicationAndFeature({appId: this.editFeatureDialog.appDetails.id, featureId: this.editFeatureDialog.feature.id});
+      this.deleteConfig(item);
     },
     updateRuleSummary() {
       var summary = "";
 
-      // this.editFeatureDialog.appDetails.keysById.forEach(key => {
-      //   if (
-      //     this.editFeatureDialog.configsById &&
-      //     this.editFeatureDialog.feature != null &&
-      //     this.editFeatureDialog.feature.negation !== undefined
-      //   ) {
-      //     var configs = this.editFeatureDialog.configsById.filter(
-
       this.applicationKeys.payload.forEach(key => {
         if (
-          this.applicationFeatureConfigs &&
+          this.editFeatureDialog.configs &&
           this.editFeatureDialog.feature != null &&
           this.editFeatureDialog.feature.negation !== undefined
         ) {
           // for each key, match configs to keys based on the keyName in both properties
-          let configs = this.applicationFeatureConfigs.payload.filter(
+          let configs = this.editFeatureDialog.configs.filter(
             config => config.keyName == key.keyName
           )
 
@@ -150,7 +141,8 @@ export default {
               summary += key.keyName + " " + config.configValue + ", ";
             });
 
-            summary = summary.substring(0, summary.length - 2); // - 2 removes the last ',<space>'
+            // - 2 removes the last ',<space>'
+            summary = summary.substring(0, summary.length - 2);
 
             summary += this.editFeatureDialog.feature.negation 
             ? " will not have access."
@@ -171,44 +163,29 @@ export default {
       deleteConfig: "applications/deleteConfig",
       toggleFeatureNegation: "notifications/toggleFeatureNegation",
       showSnackbar: "notifications/showSnackbar",
-      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature"
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
+      showEditFeatureDialog: "notifications/showEditFeatureDialog"
     })
   },
   watch: {
     editFeatureDialog: {
       handler(object) {
         if (object.feature) {
-          if (object.feature.configsById) {
-            this.configsById = JSON.parse(
-              JSON.stringify(object.feature.configsById)
+          if (object.configs) {
+            this.featureConfigs = JSON.parse(
+              JSON.stringify(object.configs)
             );
           } else {
-            this.configsById = [];
+            this.featureConfigs = [];
           }
-        }
-
-
-        if (object.feature && object.feature.id) {
-          this.retrieveConfigsByApplicationAndFeature({appId: object.appDetails.id, featureId: object.feature.id})
         }
 
         if (!object.showing) {
           this.configsLoaded = false;
         }
-
-        // this.updateRuleSummary();
-      },
-      deep: true
-    },
-    applicationFeatureConfigs: {
-      handler (object) {
-        if (object.payload) {
-          this.featureConfigs = object.payload;
-          this.configsLoaded = false;
-        }
-
+        this.configsLoaded = true;
         this.updateRuleSummary();
-      }, 
+      },
       deep: true
     },
     deleteConfigObject: {
@@ -221,19 +198,21 @@ export default {
       },
       deep: true
     },
-    configsById: {
-      handler(newConfigs, oldConfigs) {
-
+    featureConfigs: {
+       handler(newConfigs, oldConfigs) {
         // below if condition handles scenario where user will type in one combobox and then click into another
         // it makes sure the config is saved to the correct rule
         let keyToUpdate = this.currentKey;
         if (this.lastKeyFieldEntered !== this.currentKey) {
           keyToUpdate = this.lastKeyFieldEntered
         }
-
-        if (this.configsLoaded) {
+        // keyToUpdate in this if prevents the watcher from trying to POST a new config 
+        // when the configs for this feature are returned from the API and added to 
+        // editFeatureDialog.configs in the store. The watcher correctly sees that as a change to the object.
+        if (this.configsLoaded && keyToUpdate) {
           //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
+            // figure out which config is the new one that the user just typed in
             var configToAdd = newConfigs.filter(
               config => !oldConfigs.includes(config)
             );
@@ -244,39 +223,6 @@ export default {
                 keyName: keyToUpdate,
                 configValue: configToAdd[0]
               });
-            }
-          }
-        }
-
-        // this.configsLoaded = true;
-        // this.updateRuleSummary();
-      }
-    },
-    featureConfigs: {
-      async handler(newConfigs, oldConfigs) {
-
-        // below if condition handles scenario where user will type in one combobox and then click into another
-        // it makes sure the config is saved to the correct rule
-        let keyToUpdate = this.currentKey;
-        if (this.lastKeyFieldEntered !== this.currentKey) {
-          keyToUpdate = this.lastKeyFieldEntered
-        }
-
-        if (this.configsLoaded) {
-          console.log('i want to add')
-          //Adding an admin
-          if (newConfigs.length > oldConfigs.length) {
-            var configToAdd = newConfigs.filter(
-              config => !oldConfigs.includes(config)
-            );
-            if (configToAdd.length > 0) {
-              await this.addConfig({
-                appId: this.editFeatureDialog.appDetails.id,
-                featureId: this.editFeatureDialog.feature.id,
-                keyName: keyToUpdate,
-                configValue: configToAdd[0]
-              });
-              await this.retrieveConfigsByApplicationAndFeature({appId: this.editFeatureDialog.appDetails.id, featureId: this.editFeatureDialog.feature.id});
             }
           }
         } 

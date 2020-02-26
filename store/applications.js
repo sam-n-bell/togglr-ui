@@ -229,8 +229,14 @@ const actions = {
             );
             if (configs._embedded && configs._embedded.configsEntities) {
                 commit("retrieveConfigsByApplicationAndFeatureSuccess", configs._embedded.configsEntities);
+                dispatch("notifications/setEditFeatureDialogConfigs", configs._embedded.configsEntities, {
+                    root: true
+                });
             } else {
                 commit("retrieveConfigsByApplicationAndFeatureSuccess", []);
+                dispatch("notifications/setEditFeatureDialogConfigs", [], {
+                    root: true
+                });
             }
         } catch (error) {
             commit("retrieveConfigsByApplicationAndFeatureFailure", error.message);
@@ -387,7 +393,6 @@ const actions = {
     }, config) {
         commit("deleteConfig");
         try {
-            console.log(config);
             const details = await this.$axios.$delete(
                 constants.urlConstants.configsEntity + config["appId"].toString() + "_" + config.keyName + "_" + config.featureId + "_" + config.configValue
             );
@@ -672,12 +677,13 @@ const mutations = {
         state.deleteConfig.error = null;
     },
     deleteConfigSuccess(state, filter) {
-        var index = state.appDetails.payload.featuresById.findIndex(
+        // finds index position of config being removed from applicationFeatureConfigs.payload
+        let index = state.applicationFeatureConfigs.payload.findIndex(
             config => config.appId === filter.appId && config.featureId === filter.featureId && config.keyName === filter.keyName && config.configValue == filter.configValue
-        );
-
+        )
+        // removes it from the array
         if (index > -1) {
-            state.appDetails.payload.featuresById.splice(index, 1);
+            state.applicationFeatureConfigs.payload.splice(index, 1);
         }
 
         state.deleteConfig.payload = filter;
