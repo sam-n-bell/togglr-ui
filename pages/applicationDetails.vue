@@ -12,12 +12,12 @@
         <v-container fluid>
           <span class="title" >Application ID</span>
           <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2" >
-            <span class="text-xs-left"> {{ appDetails.payload.id }}</span>
+            <span class="text-xs-left" > {{ appDetails.payload.id }}</span>
             <span class="float-right mr-1" @click="copyToClipboard(appDetails.payload.id)">
-              <v-icon class="copy-icon">file_copy</v-icon>
+              <v-icon class="copy-icon" >file_copy</v-icon>
+               
             </span>
           </v-card>
-
           <span class="title">Description</span>
           <v-card
             flat
@@ -159,6 +159,43 @@
               :loading="addInProgress"
             >Add Key</v-btn>
           </v-card>
+          <div class="buffer"></div>
+            <span class="title">Administrators</span> 
+ 
+  <v-combobox
+  
+    v-model="addedusers"
+    :items="allusers"
+    chips
+    clearable
+    label="App Admins"
+    solo
+    multiple
+  >
+  
+    <template slot="selection" slot-scope="data">
+       
+      <v-chip
+        @click:close="remove(item)"
+        :selected="data.selected"
+        close
+        @input="remove(item)"
+      >
+        <strong>{{ data.item }}</strong>&nbsp;
+      </v-chip>
+    </template>
+  </v-combobox>
+
+
+
+
+
+
+
+
+
+
+         
 
           <v-expansion-panel class="elevation-0 ml-0 mt-5">
             <v-expansion-panel-content>
@@ -249,7 +286,9 @@ export default {
       page: 0,
       rowsPerPage: -1,
       sortBy: "keyName"
-    }
+    },
+  allusers:['test123','Shikha','test'],
+  addedusers: ['test'],
   }),
   computed: {
     darkThemeEnabled() {
@@ -283,6 +322,10 @@ export default {
         this.pagination.descending = false;
       }
     },
+    remove(item) {
+        this.addedusers.splice(this.addedusers.indexOf(item), 1)
+        this.addedusers = [...this.addedusers]
+      },
     startDeleteApplication(id) {
       this.dialog = false;
       this.deleteApplication(id);
@@ -339,8 +382,6 @@ export default {
       this.deleteKey(this.appDetails.payload.keysById[index]);
     },
     copyToClipboard(textToCopy) {
-      console.log("Copied text... ")
-      console.log(textToCopy);
       this.$copyText(textToCopy);
       this.showSnackbar({
         text: `ID ${textToCopy} copied to clipboard`
@@ -352,25 +393,30 @@ export default {
       $selectText(textToCopy);
     },
 
-    updateWebhookEvent() {
-      try {
-        console.log("inside try");
-    new URL(this.webhookUrl);
-    console.log("valid url");
-    console.log(this.webhookUrl);
-    let newDetails = {
+//     updateWebhookEvent() {
+//       try {
+//         console.log("inside try");
+//     new URL(this.webhookUrl);
+//   console.log("valid url");
+//     console.log(this.webhookUrl);
+//     let newDetails = {
+//         id: this.appDetails.payload.id,
+//         webhookUrl: this.webhookUrl
+//       };
+//       this.updateWebhook(newDetails);
+//   } catch (_) {
+//     console.log("invalid url");
+//     console.log(this.webhookUrl);
+//       webhookUrl:' '
+//   }
+// }
+      updateWebhookEvent(){
+let newDetails = {
         id: this.appDetails.payload.id,
         webhookUrl: this.webhookUrl
       };
       this.updateWebhook(newDetails);
-  } catch (_) {
-    console.log("invalid url");
-    console.log(this.webhookUrl);
-      webhookUrl:' '
-  }
-}
-      
-    ,
+      },
     ...mapActions({
       retrieveApplicationDetails: "applications/retrieveApplicationDetails",
       deleteApplication: "applications/deleteApplication",

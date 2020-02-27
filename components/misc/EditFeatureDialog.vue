@@ -57,7 +57,7 @@
                     close
                     @input="deleteConfigClicked(key.keyName, data.item)"
                   >
-                    <strong>{{data.item.configValue }}</strong>&nbsp;
+                    <strong>...{{data.item.configValue }}</strong>&nbsp;
                   </v-chip>
                 </template>
               </v-combobox>
