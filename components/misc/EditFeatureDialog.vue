@@ -204,12 +204,21 @@ export default {
               config => !oldConfigs.includes(config)
             );
             if (configToAdd.length > 0) {
-              this.addConfig({
-                appId: this.editFeatureDialog.appDetails.id,
-                featureId: this.editFeatureDialog.feature.id,
-                keyName: keyToUpdate,
-                configValue: configToAdd[0]
-              });
+              if (configToAdd[0].trim().length > 0) {
+                this.addConfig({
+                  appId: this.editFeatureDialog.appDetails.id,
+                  featureId: this.editFeatureDialog.feature.id,
+                  keyName: keyToUpdate,
+                  configValue: configToAdd[0]
+                });
+              } else {
+                // remove invalid config
+                var index = this.configsById.findIndex(
+                    config => config === configToAdd[0]
+                );
+                this.configsById.splice(index, 1);
+              }
+              
             }
           }
         }
