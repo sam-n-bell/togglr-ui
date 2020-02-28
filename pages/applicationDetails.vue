@@ -163,7 +163,7 @@
 
           <span class="title mt-5">Admins</span>
           <!-- <v-flex xs12>{{key.keyName}}</v-flex> -->
-            <v-flex xs12>
+            <!-- <v-flex xs12>
               <v-combobox
                 :append="null"
                 v-model="admins"
@@ -183,7 +183,53 @@
                   </v-chip>
                 </template>
               </v-combobox>
-            </v-flex>
+            </v-flex> -->
+            <v-card flat>
+            <v-data-table :headers="adminHeaders" :items="admins">
+              <template slot="items" slot-scope="props">
+                <tr @click="props.expanded = !props.expanded">
+                  <td>{{ props.item.id }}</td>
+                  <td class="text-xs-center">
+                    <v-btn
+                      flat
+                      color="error"
+                      class="pa-0 ma-0"
+                      @click="showConfirmCancelDialog(
+                    {title:'Remove Admin',
+                    description:'You are about to remove ' + (props.item.id === user ? 'yourself' : props.item.id) + ' from ' +  appDetails.payload.name+ '. Are you sure?',
+                    confirmBtnText: (props.item.id === user ? 'Yes, remove me!' : 'Yep! Let\'s do this!'),//'Yep! Let\'s do this!',
+                    cancelBtnText:'Nah, I\'m good.',
+                    confirmBtnAction: () => deleteAdminEvent(props.item.id)}
+                    )"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+           <v-text-field
+              v-validate="'required|specialChars'"
+              v-model="adminId"
+              required
+              data-vv-name="adminId"
+              data-vv-as="Admin ID"
+              name="adminId"
+              label="Admin ID"
+              :key=adminKey
+              type="text"
+              v-on:keyup.enter="addAdminEvent"
+              clearable
+              :error-messages="errors.collect('adminId')"
+            ></v-text-field>
+            <v-btn
+              color="primary"
+              class="ml-0"
+              :disabled="errors.has('adminId')"
+              @click="addAdminEvent"
+              :loading="addInProgress"
+            >Add Admin</v-btn>
+          </v-card>
 
           <v-expansion-panel class="elevation-0 ml-0 mt-5">
             <v-expansion-panel-content>
@@ -252,11 +298,17 @@ export default {
       { text: "Key", value: "keyName", sortable: false },
       { text: "Actions", align: "center", sortable: false }
     ],
+    adminHeaders: [
+      { text: "Admin", value: "id", sortable: true},
+      { text: "Actions", align: "center", sortable: false }
+    ],
     admins: [],
     dialog: false,
     editFeatureDialog: false,
     loaded: false,
     snackbar: false,
+    adminId: "",
+    adminKey: 0,
     featureName: "",
     featureKey: 0,
     keyName: "",
@@ -295,17 +347,14 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
+    user() {
+      return this.$store.state.authentication.user;
+    },
     ...mapGetters({
       getApplicationDetails: "applications/getApplicationDetails"
     })
   },
   methods: {
-    deleteAdminEvent() {
-
-    },
-    addAdminEvent() {
-        
-    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;
@@ -335,6 +384,21 @@ export default {
         });
       }
       */
+    },
+    deleteAdminEvent(adminId) {
+       this.deleteAdmin({admin: {id: adminId, appId: this.appDetails.payload.id}});
+    },
+    addAdminEvent() {
+        this.$validator.validate("adminId", this.adminId).then(res => {
+        if (res) {
+          this.addAdmin({
+            id: this.adminId,
+            appId: this.appDetails.payload.id
+          });
+          this.adminId = "";
+          this.adminKey++;        
+          }
+      });
     },
     addFeatureEvent() {
       this.$validator.validate("featureName", this.featureName).then(res => {
@@ -438,22 +502,22 @@ export default {
     },
     admins: {
       handler(newAdmins, oldAdmins) {
-        if (this.loaded) {
-          console.log('admisn changed')
-          //Adding an admin
-          if (newAdmins.length > oldAdmins.length) {
-            var adminToAdd = newAdmins.filter(
-              admin => !oldAdmins.includes(admin)
-            );
+        // if (this.loaded) {
+        //   console.log('admisn changed')
+        //   //Adding an admin
+        //   if (newAdmins.length > oldAdmins.length) {
+        //     var adminToAdd = newAdmins.filter(
+        //       admin => !oldAdmins.includes(admin)
+        //     );
 
-            if (adminToAdd.length > 0) {
-              this.addAdmin({
-                id: adminToAdd[0],
-                appId: this.appDetails.payload.id
-              });
-            }
-          }
-        }
+        //     if (adminToAdd.length > 0) {
+        //       this.addAdmin({
+        //         id: adminToAdd[0],
+        //         appId: this.appDetails.payload.id
+        //       });
+        //     }
+        //   }
+        // }
         this.loaded = true;
       }
     },
