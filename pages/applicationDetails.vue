@@ -85,7 +85,7 @@
                       description:'You are about to delete the feature ' + props.item.descr  + '. Are you sure?',
                       confirmBtnText:'Yep! Let\'s do this!',
                       cancelBtnText:'Nah, I\'m good.',
-                      confirmBtnAction: () => deleteFeatureEvent(props.index)}
+                      confirmBtnAction: () => deleteFeatureEvent(props.item.id)}
                       )"
                     >
                       <v-icon>delete</v-icon>
@@ -134,7 +134,7 @@
                     description:'You are about to delete the key ' + props.item.keyName  + '. Are you sure?',
                     confirmBtnText:'Yep! Let\'s do this!',
                     cancelBtnText:'Nah, I\'m good.',
-                    confirmBtnAction: () => deleteKeyEvent(props.index)}
+                    confirmBtnAction: () => deleteKeyEvent(props.item.keyName)}
                     )"
                     >
                       <v-icon>delete</v-icon>
@@ -333,15 +333,17 @@ export default {
             id: 0,
             negation: false
           });
-          // await this.retrieveApplicationFeatures(this.storedApp.id);
           this.featureName = "";
           this.featureKey++;
         }
       });
     },
-    deleteFeatureEvent(index) {
-      this.deleteFeature(this.appDetails.payload.featuresById[index]);
-      // await this.retrieveApplicationFeatures(this.storedApp.id);
+    deleteFeatureEvent(featureId) {
+      let featureToDelete = this.applicationFeatures.payload.filter(feature => feature.id === featureId);
+      if (featureToDelete.length > 0) {
+        this.deleteFeature(featureToDelete[0])
+      }
+      // this.deleteFeature(this.applicationFeatures.payload[index]);
     },
     addKeyEvent() {
       this.$validator.validate("keyName", this.keyName).then(async res => {
@@ -350,14 +352,17 @@ export default {
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
-          // await this.retrieveApplicationKeys(this.storedApp.id);
           this.keyName = "";
           this.keyKey++;
         }
       });
     },
-    deleteKeyEvent(index) {
-      this.deleteKey(this.appDetails.payload.keysById[index]);
+    deleteKeyEvent(keyName) {
+      let keyToDelete = this.applicationKeys.payload.filter(key => key.keyName === keyName);
+      if (keyToDelete.length > 0) {
+        this.deleteKey(keyToDelete[0])
+      }
+      // this.deleteKey(this.applicationKeys.payload[index]);
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);
