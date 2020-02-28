@@ -159,6 +159,31 @@
               :loading="addInProgress"
             >Add Key</v-btn>
           </v-card>
+          <div class="buffer"></div>
+
+          <span class="title mt-5">Admins</span>
+          <!-- <v-flex xs12>{{key.keyName}}</v-flex> -->
+            <v-flex xs12>
+              <v-combobox
+                :append="null"
+                v-model="admins"
+                @click="addAdminEvent()"
+                :append-icon="null"
+                chips
+                solo
+                multiple
+              >
+                <template slot="selection" slot-scope="data">
+                  <v-chip
+                    :selected="data.selected"
+                    close
+                    @input="deleteAdminEvent(data.item)"
+                  >
+                    <strong>{{data.item.id}}</strong>&nbsp;
+                  </v-chip>
+                </template>
+              </v-combobox>
+            </v-flex>
 
           <v-expansion-panel class="elevation-0 ml-0 mt-5">
             <v-expansion-panel-content>
@@ -275,6 +300,12 @@ export default {
     })
   },
   methods: {
+    deleteAdminEvent() {
+
+    },
+    addAdminEvent() {
+        
+    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;
@@ -408,6 +439,7 @@ export default {
     admins: {
       handler(newAdmins, oldAdmins) {
         if (this.loaded) {
+          console.log('admisn changed')
           //Adding an admin
           if (newAdmins.length > oldAdmins.length) {
             var adminToAdd = newAdmins.filter(
