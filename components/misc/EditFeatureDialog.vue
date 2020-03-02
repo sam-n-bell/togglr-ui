@@ -204,17 +204,19 @@ export default {
               config => !oldConfigs.includes(config)
             );
             if (configToAdd.length > 0) {
-              if (configToAdd[0].trim().length > 0) {
+                //removes _ characters - underscores cause issue with key removals later
+                configToAdd = configToAdd[0].replace(/_/, ''); 
+              if (configToAdd.trim().length > 0) {
                 this.addConfig({
                   appId: this.editFeatureDialog.appDetails.id,
                   featureId: this.editFeatureDialog.feature.id,
                   keyName: keyToUpdate,
-                  configValue: configToAdd[0]
+                  configValue: configToAdd
                 });
               } else {
                 // remove invalid config
                 var index = this.configsById.findIndex(
-                    config => config === configToAdd[0]
+                    config => config === configToAdd
                 );
                 this.configsById.splice(index, 1);
               }
