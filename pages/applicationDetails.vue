@@ -350,7 +350,8 @@ export default {
         webhookUrl: this.webhookUrl
         
       };
-
+      // page refresh on webhook update
+      this.retrieveApplicationDetails(this.storedApp.id);
       this.updateWebhook(newDetails);
     },
     ...mapActions({
