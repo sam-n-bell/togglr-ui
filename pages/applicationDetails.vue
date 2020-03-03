@@ -348,6 +348,7 @@ export default {
       let newDetails = {
         id: this.appDetails.payload.id,
         webhookUrl: this.webhookUrl
+        
       };
 
       this.updateWebhook(newDetails);
