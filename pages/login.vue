@@ -46,23 +46,6 @@
             :loading="loginInProgress"
           >Log In</v-btn>
         </v-card-actions>
-    
-        <v-card-actions class="card-actions">
-          <v-btn
-            color="primary"
-            class="mb-4 ml-3 mr-3"
-            block
-            @click="attemptLogin"
-            :loading="loginInProgress"
-          >Github</v-btn>
-            <v-btn
-            color="primary"
-            class="mb-4 ml-3 mr-3"
-            block
-            @click="attemptLogin"
-            :loading="loginInProgress"
-          >Facebook</v-btn>
-        </v-card-actions>
       </v-card>
 
     </v-flex>
