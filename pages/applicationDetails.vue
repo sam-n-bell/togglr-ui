@@ -452,8 +452,10 @@ export default {
       let newDetails = {
         id: this.appDetails.payload.id,
         webhookUrl: this.webhookUrl
+        
       };
-
+      // page refresh on webhook update
+      this.retrieveApplicationDetails(this.storedApp.id);
       this.updateWebhook(newDetails);
     },
     ...mapActions({
@@ -558,12 +560,14 @@ export default {
 .buffer {
   height: 40px;
 }
-
-.copy-icon {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.copy-icon{
+-webkit-user-select: none; /* Chrome/Safari */        
+-moz-user-select: none; /* Firefox */
+-ms-user-select: none; /* IE10+ */
+-khtml-user-select: none; /* webkit (konqueror) browsers */
+/* Rules below not implemented in browsers yet */
+-o-user-select: none;
+user-select: none;
 }
+
 </style>
