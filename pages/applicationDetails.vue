@@ -4,6 +4,7 @@
       <v-breadcrumbs-item nuxt to="/" exact :disabled="false">Home</v-breadcrumbs-item>
       <v-breadcrumbs-item>Application Details</v-breadcrumbs-item>
     </v-breadcrumbs>
+    {{isUserSuperAdmin}}
     <div>
       <div class="display-2 mb-4">{{ this.$route.query.appName }}</div>
       <LargeLoadingCard v-if="appDetails.loading" />
@@ -162,48 +163,29 @@
           <div class="buffer"></div>
 
           <span class="title mt-5">Admins</span>
-          <!-- <v-flex xs12>{{key.keyName}}</v-flex> -->
-            <!-- <v-flex xs12>
-              <v-combobox
-                :append="null"
-                v-model="admins"
-                @click="addAdminEvent()"
-                :append-icon="null"
-                chips
-                solo
-                multiple
-              >
-                <template slot="selection" slot-scope="data">
-                  <v-chip
-                    :selected="data.selected"
-                    close
-                    @input="deleteAdminEvent(data.item)"
-                  >
-                    <strong>{{data.item.id}}</strong>&nbsp;
-                  </v-chip>
-                </template>
-              </v-combobox>
-            </v-flex> -->
             <v-card flat>
             <v-data-table :headers="adminHeaders" :items="admins">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.id }}</td>
-                  <td class="text-xs-center">
+                  <td  class="text-xs-center">
                     <v-btn
+                      v-if="isUserSuperAdmin && props.item.id !== user"
                       flat
                       color="error"
                       class="pa-0 ma-0"
                       @click="showConfirmCancelDialog(
                     {title:'Remove Admin',
-                    description:'You are about to remove ' + (props.item.id === user ? 'yourself' : props.item.id) + ' from ' +  appDetails.payload.name+ '. Are you sure?',
-                    confirmBtnText: (props.item.id === user ? 'Yes, remove me!' : 'Yep! Let\'s do this!'),//'Yep! Let\'s do this!',
+                    description:'You are about to remove ' +  props.item.id + ' from ' +  appDetails.payload.name+ '. Are you sure?',
+                    confirmBtnText: 'Yep! Let\'s do this!',//'Yep! Let\'s do this!',
                     cancelBtnText:'Nah, I\'m good.',
                     confirmBtnAction: () => deleteAdminEvent(props.item.id)}
                     )"
                     >
                       <v-icon>delete</v-icon>
                     </v-btn>
+                    <!-- Not using v-else here so the span's text does not appear on the current user's row in the table -->
+                    <span v-if="!isUserSuperAdmin && props.item.id !== user">SuperAdmin Role Required</span>
                   </td>
                 </tr>
               </template>
@@ -351,7 +333,8 @@ export default {
       return this.$store.state.authentication.user;
     },
     ...mapGetters({
-      getApplicationDetails: "applications/getApplicationDetails"
+      getApplicationDetails: "applications/getApplicationDetails",
+      isUserSuperAdmin: "authentication/isUserSuperAdmin"
     })
   },
   methods: {
@@ -464,6 +447,9 @@ export default {
     })
   },
   watch: {
+    isUserSuperAdmin(response) {
+      console.log('is sadmin?' + response);
+    },
     appDetails: {
       handler(object) {
         if (object.payload) {
