@@ -37,6 +37,21 @@ const state = () => ({
         loading: false,
         error: null
     },
+    applicationFeatures: {
+        payload: null,
+        loading: false,
+        error: null
+    },
+    applicationFeatureConfigs: {
+        payload: null,
+        loading: false,
+        error: null
+    },
+    applicationKeys: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     addFeature: {
         payload: null,
         loading: false,
@@ -183,6 +198,66 @@ const actions = {
             commit("addAdminSuccess", details);
         } catch (error) {
             commit("addAdminFailure", error.message);
+        }
+    },
+    async retrieveApplicationFeatures({
+        commit,
+        dispatch
+    }, appId, sortBy="descr", sortOrder="asc") {
+        commit("retrieveApplicationFeatures")
+        try {
+            const features = await this.$axios.$get(
+                `${constants.urlConstants.retrieveApplicationFeatures}${appId}&sort=${sortBy},${sortOrder}`
+            );
+            if (features._embedded && features._embedded.featureEntities) {
+                commit("retrieveApplicationFeaturesSuccess", features._embedded.featureEntities);
+            } else {
+                commit("retrieveApplicationFeaturesSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveApplicationFeaturesFailure", error.message);
+        }
+    },
+    async retrieveConfigsByApplicationAndFeature({
+        commit,
+        dispatch
+    }, payload) {
+        commit("retrieveConfigsByApplicationAndFeature")
+        try {
+            const configs = await this.$axios.$get(
+                `${constants.urlConstants.retrieveConfigsByApplicationAndFeature}${payload.appId}&featureId=${payload.featureId}`
+            );
+            if (configs._embedded && configs._embedded.configsEntities) {
+                commit("retrieveConfigsByApplicationAndFeatureSuccess", configs._embedded.configsEntities);
+                dispatch("notifications/setEditFeatureDialogConfigs", configs._embedded.configsEntities, {
+                    root: true
+                });
+            } else {
+                commit("retrieveConfigsByApplicationAndFeatureSuccess", []);
+                dispatch("notifications/setEditFeatureDialogConfigs", [], {
+                    root: true
+                });
+            }
+        } catch (error) {
+            commit("retrieveConfigsByApplicationAndFeatureFailure", error.message);
+        }
+    },
+    async retrieveApplicationKeys({
+        commit,
+        dispatch
+    }, appId, sortBy="keyName", sortOrder="asc") {
+        commit("retrieveApplicationKeys")
+        try {
+            const keys = await this.$axios.$get(
+                `${constants.urlConstants.retrieveApplicationKeys}${appId}&sort=${sortBy},${sortOrder}`
+            );
+            if (keys._embedded && keys._embedded.keysEntities) {
+                commit("retrieveApplicationKeysSuccess", keys._embedded.keysEntities);
+            } else {
+                commit("retrieveApplicationKeysSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveApplicationKeysFailure", error.message);
         }
     },
     async addFeature({
@@ -367,6 +442,53 @@ const mutations = {
         state.myApps.loading = false;
         state.myApps.error = error;
     },
+    //Retrieve Application Features (for sorting purposes usually)
+    retrieveApplicationFeatures(state) {
+        state.applicationFeatures.payload = []
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = null;
+    },
+    retrieveApplicationFeaturesSuccess(state, features) {
+        state.applicationFeatures.payload = features;
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = null;
+    },
+    retrieveApplicationFeaturesFailure(state, error) {
+        state.applicationFeatures.payload = []
+        state.applicationFeatures.loading = false;
+        state.applicationFeatures.error = error;
+    },
+    retrieveConfigsByApplicationAndFeature(state) {
+        state.applicationFeatureConfigs.payload = []
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = null;
+    },
+    retrieveConfigsByApplicationAndFeatureSuccess(state, configs) {
+        state.applicationFeatureConfigs.payload = configs;
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = null;
+    },
+    retrieveConfigsByApplicationAndFeatureFailure(state, error) {
+        state.applicationFeatureConfigs.payload = []
+        state.applicationFeatureConfigs.loading = false;
+        state.applicationFeatureConfigs.error = error;
+    },
+    //Retrieve Application Keys (for sorting purposes usually)
+    retrieveApplicationKeys(state) {
+        state.applicationKeys.payload = []
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = null;
+    },
+    retrieveApplicationKeysSuccess(state, features) {
+        state.applicationKeys.payload = features;
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = null;
+    },
+    retrieveApplicationKeysFailure(state, error) {
+        state.applicationKeys.payload = []
+        state.applicationKeys.loading = false;
+        state.applicationKeys.error = error;
+    },
     //Create Application
     createApplication(state) {
         state.createApplication.payload = null;
@@ -489,9 +611,8 @@ const mutations = {
         if (response.configsById === undefined) {
             response.configsById = [];
         }
-
         state.addFeature.payload = response;
-        state.appDetails.payload.featuresById.push(response);
+        state.applicationFeatures.payload.push(response);
         state.addFeature.loading = false;
         state.addFeature.error = null;
     },
@@ -507,12 +628,12 @@ const mutations = {
         state.deleteFeature.error = null;
     },
     deleteFeatureSuccess(state, filter) {
-        var index = state.appDetails.payload.featuresById.findIndex(
+        let index = state.applicationFeatures.payload.findIndex(
             feature => feature.id === filter.id
-        );
+        )
 
         if (index > -1) {
-            state.appDetails.payload.featuresById.splice(index, 1);
+            state.applicationFeatures.payload.splice(index, 1);
         }
 
         state.deleteFeature.payload = filter;
@@ -531,12 +652,12 @@ const mutations = {
         state.deleteFeature.error = null;
     },
     deleteKeySuccess(state, filter) {
-        var index = state.appDetails.payload.keysById.findIndex(
+        let index = state.applicationKeys.payload.findIndex(
             key => key.keyName === filter.keyName
-        );
+        )
 
         if (index > -1) {
-            state.appDetails.payload.keysById.splice(index, 1);
+            state.applicationKeys.payload.splice(index, 1);
         }
 
         state.deleteFeature.payload = filter;
@@ -555,12 +676,13 @@ const mutations = {
         state.deleteConfig.error = null;
     },
     deleteConfigSuccess(state, filter) {
-        var index = state.appDetails.payload.featuresById.findIndex(
+        // finds index position of config being removed from applicationFeatureConfigs.payload
+        let index = state.applicationFeatureConfigs.payload.findIndex(
             config => config.appId === filter.appId && config.featureId === filter.featureId && config.keyName === filter.keyName && config.configValue == filter.configValue
-        );
-
+        )
+        // removes it from the array
         if (index > -1) {
-            state.appDetails.payload.featuresById.splice(index, 1);
+            state.applicationFeatureConfigs.payload.splice(index, 1);
         }
 
         state.deleteConfig.payload = filter;
@@ -596,7 +718,7 @@ const mutations = {
     },
     addKeySuccess(state, response) {
         state.addKey.payload = response;
-        state.appDetails.payload.keysById.push(response);
+        state.applicationKeys.payload.push(response);
         state.addKey.loading = false;
         state.addKey.error = null;
     },
