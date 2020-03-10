@@ -11,6 +11,7 @@ const state = () => ({
     logoutDialogShowing: false,
     jwt: null,
     user: "",
+    roles: [],
     corpId: 1
 });
 
@@ -22,6 +23,18 @@ const getters = {
         );
 
         return !!state.user || !!token;
+    },
+    isUserSuperAdmin: state => {
+        if (state.roles){
+            console.log('checking user authorities');
+            let superAdmin = state.roles.filter(
+                role => role.authority.toUpperCase() === 'ROLE_SUPERADMIN'
+            );
+            if (superAdmin.length > 0) {
+                return true;
+            }
+        }
+        return false;
     },
     getUsernameIntial: state => {
         if (state.user) {
@@ -95,7 +108,10 @@ const mutations = {
         state.jwt = jwt;
 
         let decoded = jsonwebtoken.decode(jwt);
+        console.log('saving');
+        console.log(decoded);
         state.user = decoded.details.username;
+        state.roles = decoded.details.authorities
     },
     login(state) {
         state.loginInProgress = true;

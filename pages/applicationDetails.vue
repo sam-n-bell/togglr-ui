@@ -4,6 +4,7 @@
       <v-breadcrumbs-item nuxt to="/" exact :disabled="false">Home</v-breadcrumbs-item>
       <v-breadcrumbs-item>Application Details</v-breadcrumbs-item>
     </v-breadcrumbs>
+    {{isUserSuperAdmin}}
     <div>
       <div class="display-2 mb-4">{{ this.$route.query.appName }}</div>
       <LargeLoadingCard v-if="appDetails.loading" />
@@ -159,6 +160,58 @@
               :loading="addInProgress"
             >Add Key</v-btn>
           </v-card>
+          <div class="buffer"></div>
+
+          <span class="title mt-5">Admins</span>
+            <v-card flat>
+            <v-data-table :headers="adminHeaders" :items="admins">
+              <template slot="items" slot-scope="props">
+                <tr @click="props.expanded = !props.expanded">
+                  <td>{{ props.item.id }}</td>
+                  <td  class="text-xs-center">
+                    <v-btn
+                      v-if="isUserSuperAdmin && props.item.id !== user"
+                      flat
+                      color="error"
+                      class="pa-0 ma-0"
+                      @click="showConfirmCancelDialog(
+                    {title:'Remove Admin',
+                    description:'You are about to remove ' +  props.item.id + ' from ' +  appDetails.payload.name+ '. Are you sure?',
+                    confirmBtnText: 'Yep! Let\'s do this!',//'Yep! Let\'s do this!',
+                    cancelBtnText:'Nah, I\'m good.',
+                    confirmBtnAction: () => deleteAdminEvent(props.item.id)}
+                    )"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                    <!-- Not using v-else here so the span's text does not appear on the current user's row in the table -->
+                    <span v-if="!isUserSuperAdmin && props.item.id !== user">SuperAdmin Role Required</span>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+           <v-text-field
+              v-validate="'required|specialChars'"
+              v-model="adminId"
+              required
+              data-vv-name="adminId"
+              data-vv-as="Admin ID"
+              name="adminId"
+              label="Admin ID"
+              :key=adminKey
+              type="text"
+              v-on:keyup.enter="addAdminEvent"
+              clearable
+              :error-messages="errors.collect('adminId')"
+            ></v-text-field>
+            <v-btn
+              color="primary"
+              class="ml-0"
+              :disabled="errors.has('adminId')"
+              @click="addAdminEvent"
+              :loading="addInProgress"
+            >Add Admin</v-btn>
+          </v-card>
 
           <v-expansion-panel class="elevation-0 ml-0 mt-5">
             <v-expansion-panel-content>
@@ -227,11 +280,17 @@ export default {
       { text: "Key", value: "keyName", sortable: false },
       { text: "Actions", align: "center", sortable: false }
     ],
+    adminHeaders: [
+      { text: "Admin", value: "id", sortable: true},
+      { text: "Actions", align: "center", sortable: false }
+    ],
     admins: [],
     dialog: false,
     editFeatureDialog: false,
     loaded: false,
     snackbar: false,
+    adminId: "",
+    adminKey: 0,
     featureName: "",
     featureKey: 0,
     keyName: "",
@@ -270,8 +329,12 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
+    user() {
+      return this.$store.state.authentication.user;
+    },
     ...mapGetters({
-      getApplicationDetails: "applications/getApplicationDetails"
+      getApplicationDetails: "applications/getApplicationDetails",
+      isUserSuperAdmin: "authentication/isUserSuperAdmin"
     })
   },
   methods: {
@@ -304,6 +367,21 @@ export default {
         });
       }
       */
+    },
+    deleteAdminEvent(adminId) {
+       this.deleteAdmin({admin: {id: adminId, appId: this.appDetails.payload.id}});
+    },
+    addAdminEvent() {
+        this.$validator.validate("adminId", this.adminId).then(res => {
+        if (res) {
+          this.addAdmin({
+            id: this.adminId,
+            appId: this.appDetails.payload.id
+          });
+          this.adminId = "";
+          this.adminKey++;        
+          }
+      });
     },
     addFeatureEvent() {
       this.$validator.validate("featureName", this.featureName).then(res => {
@@ -369,6 +447,9 @@ export default {
     })
   },
   watch: {
+    isUserSuperAdmin(response) {
+      console.log('is sadmin?' + response);
+    },
     appDetails: {
       handler(object) {
         if (object.payload) {
@@ -407,21 +488,22 @@ export default {
     },
     admins: {
       handler(newAdmins, oldAdmins) {
-        if (this.loaded) {
-          //Adding an admin
-          if (newAdmins.length > oldAdmins.length) {
-            var adminToAdd = newAdmins.filter(
-              admin => !oldAdmins.includes(admin)
-            );
+        // if (this.loaded) {
+        //   console.log('admisn changed')
+        //   //Adding an admin
+        //   if (newAdmins.length > oldAdmins.length) {
+        //     var adminToAdd = newAdmins.filter(
+        //       admin => !oldAdmins.includes(admin)
+        //     );
 
-            if (adminToAdd.length > 0) {
-              this.addAdmin({
-                id: adminToAdd[0],
-                appId: this.appDetails.payload.id
-              });
-            }
-          }
-        }
+        //     if (adminToAdd.length > 0) {
+        //       this.addAdmin({
+        //         id: adminToAdd[0],
+        //         appId: this.appDetails.payload.id
+        //       });
+        //     }
+        //   }
+        // }
         this.loaded = true;
       }
     },
