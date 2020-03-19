@@ -19,7 +19,8 @@ var urlConstants = Object.freeze({
     adminEntity: `${baseURL}adminsEntities/`,
     configsEntity: `${baseURL}configsEntities/`,
     login: `${baseURL}login`,
-    logout: `${baseURL}logout`
+    logout: `${baseURL}logout`,
+    ssologin: `${baseURL}ssologin`
 });
 
 var disallowedChars = Object.freeze(["_", "/"]);

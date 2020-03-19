@@ -46,8 +46,21 @@
             :loading="loginInProgress"
           >Log In</v-btn>
         </v-card-actions>
+        <v-card-actions class="card-actions">
+          <v-btn
+            color="primary"
+            class="mb-4 ml-3 mr-3"
+            block
+            @click="githubLogin"
+            :loading="loginInProgress"
+          >Login with GitHub</v-btn>
+        </v-card-actions>
       </v-card>
+
     </v-flex>
+
+
+
   </v-layout>
 </template>
 
@@ -61,7 +74,8 @@ export default {
   data: () => ({
     username: "",
     password: "",
-    appName: constants.systemConstants.appName
+    appName: constants.systemConstants.appName,
+    ssodata: ""
   }),
   computed: {
     loginInProgress() {
@@ -74,6 +88,8 @@ export default {
       isUserAuthenticated: "authentication/isUserAuthenticated"
     })
   },
+
+
   methods: {
     attemptLogin() {
       this.$validator.validateAll().then(res => {
@@ -85,6 +101,11 @@ export default {
         }
       });
     },
+githubLogin(){
+// this.$router.go('www.google.com');
+console.log(this.ssodata.data);
+window.open(this.ssodata.data,"_self");
+},
     ...mapActions({
       login: "authentication/login"
     })
@@ -95,8 +116,18 @@ export default {
         this.$router.push("/");
       }
     }
+  },
+async mounted() {
+
+    try {
+      this.ssodata = await this.$axios.get(`${constants.urlConstants.ssologin}`);
+      console.log(ssodata.data);
+    } catch (err) {
+ console.log(err);
+    }
   }
-};
+
+}
 </script>
 
 <style lang="scss" scoped>
