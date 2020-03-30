@@ -108,8 +108,6 @@ const mutations = {
         state.jwt = jwt;
 
         let decoded = jsonwebtoken.decode(jwt);
-        console.log('saving');
-        console.log(decoded);
         state.user = decoded.details.username;
         state.roles = decoded.details.authorities
     },

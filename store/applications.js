@@ -7,6 +7,11 @@ const state = () => ({
         loading: false,
         error: null
     },
+    recoverApplication: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     createApplication: {
         payload: null,
         loading: false,
@@ -104,6 +109,21 @@ const getters = {
 
 //Actions are like mutations but they are executed async instead of sync.  Actions call mutations.
 const actions = {
+    async recoverDeletedApplication({
+        commit,
+        dispatch
+    }, app) {
+        commit("recoverDeletedApplication")
+        try {
+            console.log('recovering application ' + app.id)
+            const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedApplication}${app.id}/recover`);
+            console.log(app);
+            commit("recoverDeletedApplicationSuccess", app);
+        } catch (error) {
+            console.log(error);
+            commit("recoverDeletedApplicationFailure", error.message);
+        }
+    },
     async retrieveApplications({
         commit
     }) {
@@ -425,6 +445,22 @@ const actions = {
 
 //Mutations are used to change the state.  The state should only be changed through mutations to keep a record.
 const mutations = {
+    recoverDeletedApplication(state) {
+        state.recoverApplication.payload = null;
+        state.recoverApplication.loading = true;
+        state.recoverApplication.error = null
+    },
+    recoverDeletedApplicationSuccess(state, app) {
+        state.recoverApplication.payload = app
+        state.recoverApplication.loading = false;
+        state.recoverApplication.error = null
+        state.myApps.payload.push(app)
+    },
+    recoverDeletedApplicationFailure(state, error) {
+        state.recoverApplication.payload = null;
+        state.recoverApplication.loading = false;
+        state.recoverApplication.error = error
+    },
     //Retrieve Applications
     retrieveApplications(state) {
         state.myApps.payload = [];

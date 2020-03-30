@@ -15,6 +15,11 @@ const state = () => ({
         configs: [],
         appDetails: null
     },
+    deletedApplicationsDialog: {
+        showing: false,
+        applications: [],
+        error: null
+    },
     confirmCancelDialog: {
         showing: false,
         title: "",
@@ -43,6 +48,32 @@ const actions = {
         commit
     }) {
         commit("hideSnackbar");
+    },
+    async retrieveDeletedApplications({
+        commit,
+        dispatch
+    }, appId) {
+        commit("retrieveDeletedApplications")
+        try {
+            const apps = await this.$axios.$get(constants.urlConstants.retrieveDeletedpplications);
+            console.log(apps);
+            if (apps._embedded && apps._embedded.appEntities) {
+               commit("retrieveDeletedApplicationsSuccess", apps._embedded.appEntities);
+            } else {
+                commit("retrieveDeletedApplicationsSuccess", []);
+            }
+        } catch (error) {
+            console.log(error);
+            commit("retrieveDeletedApplicationsFailure", error.message);
+        } finally {
+            commit("showDeletedApplicationsDialog");
+        }
+    },
+    showDeletedApplicationsDialog({commit}) {
+        commit("showDeletedApplicationsDialog")
+    },
+    hideDeletedApplicationsDialog({commit}) {
+        commit("hideDeletedApplicationsDialog")
     },
     setEditFeatureDialogConfigs({
         commit
@@ -112,6 +143,28 @@ const mutations = {
         state.snackbar.showing = false;
         state.snackbar.text = "";
         state.timeout = 2000;
+    },
+    retrieveDeletedApplications(state) {
+        state.deletedApplicationsDialog.showing = false;
+        state.deletedApplicationsDialog.applications = [];
+        state.deletedApplicationsDialog.error = null;
+    },
+    retrieveDeletedApplicationsSuccess(state, applications) {
+        state.deletedApplicationsDialog.applications = applications;
+        state.deletedApplicationsDialog.error = null;
+    },
+    retrieveDeletedApplicationsFailure(state, error) {
+        state.deletedApplicationsDialog.applications = [];
+        state.deletedApplicationsDialog.error = error;
+    },
+    showDeletedApplicationsDialog(state) {
+        console.log("show the del app dia")
+        state.deletedApplicationsDialog.showing = true;
+    },
+    hideDeletedApplicationsDialog(state) {
+        state.deletedApplicationsDialog.showing = false;
+        state.deletedApplicationsDialog.applications = [];
+        state.deletedApplicationsDialog.error = null;
     },
     showEditFeatureDialog(state, appConfig) {
         state.editFeatureDialog.showing = true;
