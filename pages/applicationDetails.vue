@@ -4,7 +4,6 @@
       <v-breadcrumbs-item nuxt to="/" exact :disabled="false">Home</v-breadcrumbs-item>
       <v-breadcrumbs-item>Application Details</v-breadcrumbs-item>
     </v-breadcrumbs>
-    {{isUserSuperAdmin}}
     <div>
       <div class="display-2 mb-4">{{ this.$route.query.appName }}</div>
       <LargeLoadingCard v-if="appDetails.loading" />
