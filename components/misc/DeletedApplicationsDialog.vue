@@ -2,6 +2,7 @@
   <v-dialog
     v-model="deletedApplicationsDialog.showing"
     hide-overlay
+    fullscreen
     transition="dialog-bottom-transition"
     @keyup.esc="hideDeletedApplicationsDialog()"
   >
@@ -19,7 +20,7 @@
           <v-flex xs12>
             <v-card color="darkBackground" class="pa-2">
               <span>hello</span>
-              <pre>{{deletedApplicationsDialog.applications}}</pre>
+              <!-- <pre>{{deletedApplicationsDialog.applications}}</pre> -->
               <v-card flat>
             <v-data-table :headers="appHeaders" :items="deletedApplicationsDialog.applications">
               <template slot="items" slot-scope="props">
@@ -29,24 +30,9 @@
                   <td>{{ props.item.descr }}</td>
                   <td>{{ props.item.webhookUrl }}</td>
                   <td>
-                    <!-- <v-btn
-                      v-if="isUserSuperAdmin && props.item.id !== user"
-                      flat
-                      color="error"
-                      class="pa-0 ma-0"
-                      @click="showConfirmCancelDialog(
-                    {title:'Remove Admin',
-                    description:'You are about to remove ' +  props.item.id + ' from ' +  appDetails.payload.name+ '. Are you sure?',
-                    confirmBtnText: 'Yep! Let\'s do this!',//'Yep! Let\'s do this!',
-                    cancelBtnText:'Nah, I\'m good.',
-                    confirmBtnAction: () => deleteAdminEvent(props.item.id)}
-                    )"
-                    > -->
                     <v-btn color="success" outline @click="recoverApplicationEvent(props.item)">
                       <span>Recover</span>
                     </v-btn>
-                    <!-- Not using v-else here so the span's text does not appear on the current user's row in the table -->
-                    <!-- <span v-if="!isUserSuperAdmin && props.item.id !== user">SuperAdmin Role Required</span> -->
                   </td>
                 </tr>
               </template>
@@ -92,6 +78,9 @@ export default {
     async recoverApplicationEvent (app) {
       await this.recoverDeletedApplication(app);
       if (this.recoverApplicationObject.error === null) {
+        this.showSnackbar({
+            text: "Application recovered"
+          });
         this.hideDeletedApplicationsDialog();
       }
     },
@@ -101,7 +90,8 @@ export default {
       showDeletedApplicationsDialog: "notifications/showDeletedApplicationsDialog",
       hideDeletedApplicationsDialog: "notifications/hideDeletedApplicationsDialog",
       recoverDeletedApplication: "applications/recoverDeletedApplication",
-      retrieveApplications: "applications/retrieveApplications"
+      retrieveApplications: "applications/retrieveApplications",
+      showSnackbar: "notifications/showSnackbar"
     })
   },
   watch: {
