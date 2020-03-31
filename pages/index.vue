@@ -20,19 +20,6 @@
       <v-flex xs3 sm3 md2 lg2 xl3 class="right-align">
         <v-btn outline color="error" @click="retrieveDeletedApplicationsEvent()">Recover Application</v-btn>
       </v-flex>
-      <!-- <v-spacer></v-spacer>
-      <v-flex xs4 sm4 md4 lg3 xl3 class="right-align">
-        <v-btn-toggle v-model="toggle_exclusive">
-                <v-btn outline color="primary">
-                  <v-icon>add</v-icon>
-                  <span>Add Application</span>
-                </v-btn>
-                <v-btn outline color="error">
-                  <v-icon>restore_from_trash</v-icon>
-                  <span>recover app</span>
-                </v-btn>
-        </v-btn-toggle>
-      </v-flex> -->
     </v-layout>
     <v-layout row wrap v-if="applications.loading">
       <v-flex xs12 md4 pa-2 v-for="i in 6" :key="i + 100">
@@ -93,8 +80,27 @@ export default {
       }
       return [];
     },
+    retrieveDeletedApplicationsObject () {
+      return this.$store.state.applications.deletedApplications;
+    },
     deletedApplicationsDialog() {
       return this.$store.state.notifications.deletedApplicationsDialog;
+    }
+  },
+  watch : {
+    retrieveDeletedApplicationsObject: {
+      handler(object) {
+        if (object.payload) {
+          this.showDeletedApplicationsDialog(object.payload);
+        } 
+
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
     }
   },
   methods: {
@@ -103,7 +109,8 @@ export default {
     },
     ...mapActions({
       retrieveApplications: "applications/retrieveApplications",
-      retrieveDeletedApplications: "notifications/retrieveDeletedApplications"
+      retrieveDeletedApplications: "applications/retrieveDeletedApplications",
+      showDeletedApplicationsDialog: "notifications/showDeletedApplicationsDialog"
     })
   }
 };

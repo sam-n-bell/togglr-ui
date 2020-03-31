@@ -7,6 +7,11 @@ const state = () => ({
         loading: false,
         error: null
     },
+    deletedApplications: {
+        loading: false,
+        payload: [],
+        error: null
+    },
     recoverApplication: {
         payload: null,
         loading: false,
@@ -109,21 +114,6 @@ const getters = {
 
 //Actions are like mutations but they are executed async instead of sync.  Actions call mutations.
 const actions = {
-    async recoverDeletedApplication({
-        commit,
-        dispatch
-    }, app) {
-        commit("recoverDeletedApplication")
-        try {
-            console.log('recovering application ' + app.id)
-            const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedApplication}${app.id}/recover`);
-            console.log(app);
-            commit("recoverDeletedApplicationSuccess", app);
-        } catch (error) {
-            console.log(error);
-            commit("recoverDeletedApplicationFailure", error.message);
-        }
-    },
     async retrieveApplications({
         commit
     }) {
@@ -146,6 +136,39 @@ const actions = {
         } catch (error) {
             commit("retrieveApplicationsFailure", error.message);
         }
+    },
+    async recoverDeletedApplication({
+        commit,
+        dispatch
+    }, app) {
+        commit("recoverDeletedApplication")
+        try {
+            console.log('recovering application ' + app.id)
+            const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedApplication}${app.id}/recover`);
+            console.log(app);
+            commit("recoverDeletedApplicationSuccess", app);
+        } catch (error) {
+            console.log(error);
+            commit("recoverDeletedApplicationFailure", error.message);
+        }
+    },
+    async retrieveDeletedApplications({
+        commit,
+        dispatch
+    }, appId) {
+        commit("retrieveDeletedApplications")
+        try {
+            const apps = await this.$axios.$get(constants.urlConstants.retrieveDeletedpplications);
+            console.log(apps);
+            if (apps._embedded && apps._embedded.appEntities) {
+               commit("retrieveDeletedApplicationsSuccess", apps._embedded.appEntities);
+            } else {
+                commit("retrieveDeletedApplicationsSuccess", []);
+            }
+        } catch (error) {
+            console.log(error);
+            commit("retrieveDeletedApplicationsFailure", error.message);
+        } 
     },
     async createApplication({
         commit
@@ -449,6 +472,21 @@ const mutations = {
         state.recoverApplication.payload = null;
         state.recoverApplication.loading = true;
         state.recoverApplication.error = null
+    },
+    retrieveDeletedApplications(state) {
+        state.deletedApplications.loading = true;
+        state.deletedApplications.payload = [];
+        state.deletedApplications.error = null;
+    },
+    retrieveDeletedApplicationsSuccess(state, applications) {
+        state.deletedApplications.loading = false;
+        state.deletedApplications.payload = applications;
+        state.deletedApplications.error = null;
+    },
+    retrieveDeletedApplicationsFailure(state, error) {
+        state.deletedApplications.loading = false;
+        state.deletedApplications.payload = [];
+        state.deletedApplications.error = error;
     },
     recoverDeletedApplicationSuccess(state, app) {
         state.recoverApplication.payload = app

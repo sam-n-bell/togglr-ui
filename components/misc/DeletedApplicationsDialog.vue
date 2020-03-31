@@ -4,7 +4,7 @@
     hide-overlay
     fullscreen
     transition="dialog-bottom-transition"
-    @keyup.esc="hideDeletedApplicationsDialog()"
+    @keydown.esc="hideDeletedApplicationsDialog()"
   >
     <!-- <v-card v-if="deletedApplicationsDialog.error === null"> -->
       <v-card>
@@ -16,28 +16,28 @@
       </v-toolbar>
       <v-container fluid>
         <v-layout row wrap>
-          <v-flex xs12>Rule Summary</v-flex>
           <v-flex xs12>
             <v-card color="darkBackground" class="pa-2">
-              <span>hello</span>
-              <!-- <pre>{{deletedApplicationsDialog.applications}}</pre> -->
-              <v-card flat>
-            <v-data-table :headers="appHeaders" :items="deletedApplicationsDialog.applications">
-              <template slot="items" slot-scope="props">
-                <tr>
-                  <td >{{ props.item.id }}</td>
-                  <td >{{ props.item.name }}</td>
-                  <td>{{ props.item.descr }}</td>
-                  <td>{{ props.item.webhookUrl }}</td>
-                  <td>
-                    <v-btn color="success" outline @click="recoverApplicationEvent(props.item)">
-                      <span>Recover</span>
-                    </v-btn>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-            </v-card>
+              <v-card flat v-if="retrieveDeletedApplicationsObject.error === null">
+                <v-data-table :headers="appHeaders" :items="deletedApplicationsDialog.applications">
+                  <template slot="items" slot-scope="props">
+                    <tr>
+                      <td >{{ props.item.id }}</td>
+                      <td >{{ props.item.name }}</td>
+                      <td>{{ props.item.descr }}</td>
+                      <td>{{ props.item.webhookUrl }}</td>
+                      <td>
+                        <v-btn color="success" outline @click="recoverApplicationEvent(props.item)">
+                          <span>Recover</span>
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </v-card>
+              <v-card v-else>
+                <span>{{retrieveDeletedApplicationsObject.error}}</span>
+              </v-card>
             </v-card>
           </v-flex>
         </v-layout>
@@ -70,6 +70,9 @@ export default {
     deletedApplicationsDialog() {
       return this.$store.state.notifications.deletedApplicationsDialog;
     },
+    retrieveDeletedApplicationsObject () {
+      return this.$store.state.applications.deletedApplications;
+    },
     recoverApplicationObject() {
       return this.$store.state.applications.recoverApplication;
     }
@@ -86,8 +89,6 @@ export default {
     },
     ...mapActions({
       showSnackbar: "notifications/showSnackbar",
-      retrieveDeletedApplications: "notifications/retrieveDeletedApplications",
-      showDeletedApplicationsDialog: "notifications/showDeletedApplicationsDialog",
       hideDeletedApplicationsDialog: "notifications/hideDeletedApplicationsDialog",
       recoverDeletedApplication: "applications/recoverDeletedApplication",
       retrieveApplications: "applications/retrieveApplications",
