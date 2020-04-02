@@ -17,6 +17,16 @@ const state = () => ({
         loading: false,
         error: null
     },
+    deletedFeatures: {
+        loading: false,
+        payload: [],
+        error: null
+    },
+    recoverFeature: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     createApplication: {
         payload: null,
         loading: false,
@@ -143,9 +153,7 @@ const actions = {
     }, app) {
         commit("recoverDeletedApplication")
         try {
-            console.log('recovering application ' + app.id)
             const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedApplication}${app.id}/recover`);
-            console.log(app);
             commit("recoverDeletedApplicationSuccess", app);
         } catch (error) {
             console.log(error);
@@ -155,11 +163,10 @@ const actions = {
     async retrieveDeletedApplications({
         commit,
         dispatch
-    }, appId) {
+    }) {
         commit("retrieveDeletedApplications")
         try {
             const apps = await this.$axios.$get(constants.urlConstants.retrieveDeletedpplications);
-            console.log(apps);
             if (apps._embedded && apps._embedded.appEntities) {
                commit("retrieveDeletedApplicationsSuccess", apps._embedded.appEntities);
             } else {
@@ -168,6 +175,36 @@ const actions = {
         } catch (error) {
             console.log(error);
             commit("retrieveDeletedApplicationsFailure", error.message);
+        } 
+    },
+    async recoverDeletedFeature({
+        commit,
+        dispatch
+    }, feature) {
+        commit("recoverDeletedFeature")
+        try {
+            const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedFeature}${feature.id}/recover`);
+            commit("recoverDeletedFeatureSuccess", app);
+        } catch (error) {
+            console.log(error);
+            commit("recoverDeletedFeatureFailure", error.message);
+        }
+    },
+    async retrieveDeletedFeatures({
+        commit,
+        dispatch
+    }, appId) {
+        commit("retrieveDeletedFeatures")
+        try {
+            const apps = await this.$axios.$get(`${constants.urlConstants.retrieveDeletedFeaturesForApp}${appId}`);
+            if (apps._embedded && apps._embedded.featureEntities) {
+               commit("retrieveDeletedFeaturesSuccess", apps._embedded.featureEntities);
+            } else {
+                commit("retrieveDeletedFeaturesSuccess", []);
+            }
+        } catch (error) {
+            console.log(error);
+            commit("retrieveDeletedFeaturesFailure", error.message);
         } 
     },
     async createApplication({
@@ -498,6 +535,37 @@ const mutations = {
         state.recoverApplication.payload = null;
         state.recoverApplication.loading = false;
         state.recoverApplication.error = error
+    },
+    recoverDeletedFeature(state) {
+        state.recoverFeature.payload = null;
+        state.recoverFeature.loading = true;
+        state.recoverFeature.error = null
+    },
+    retrieveDeletedFeatures(state) {
+        state.deletedFeatures.loading = true;
+        state.deletedFeatures.payload = [];
+        state.deletedFeatures.error = null;
+    },
+    retrieveDeletedFeaturesSuccess(state, applications) {
+        state.deletedFeatures.loading = false;
+        state.deletedFeatures.payload = applications;
+        state.deletedFeatures.error = null;
+    },
+    retrieveDeletedFeaturesFailure(state, error) {
+        state.deletedFeatures.loading = false;
+        state.deletedFeatures.payload = [];
+        state.deletedFeatures.error = error;
+    },
+    recoverDeletedFeatureSuccess(state, app) {
+        state.recoverFeature.payload = app
+        state.recoverFeature.loading = false;
+        state.recoverFeature.error = null
+        state.applicationFeatures.payload.push(app)
+    },
+    recoverDeletedFeatureFailure(state, error) {
+        state.recoverFeature.payload = null;
+        state.recoverFeature.loading = false;
+        state.recoverFeature.error = error
     },
     //Retrieve Applications
     retrieveApplications(state) {

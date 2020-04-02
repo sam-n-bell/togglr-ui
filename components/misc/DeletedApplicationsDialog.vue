@@ -4,9 +4,7 @@
     hide-overlay
     fullscreen
     transition="dialog-bottom-transition"
-    @keydown.esc="hideDeletedApplicationsDialog()"
-  >
-    <!-- <v-card v-if="deletedApplicationsDialog.error === null"> -->
+    @keydown.esc="hideDeletedApplicationsDialog()">
       <v-card>
         <v-toolbar color="primary">
         <v-btn icon @click.native="hideDeletedApplicationsDialog()">
@@ -17,8 +15,8 @@
       <v-container fluid>
         <v-layout row wrap>
           <v-flex xs12>
-            <v-card color="darkBackground" class="pa-2">
-              <v-card flat v-if="retrieveDeletedApplicationsObject.error === null">
+            <v-card color="darkBackground" class="pa-2"  flat v-if="retrieveDeletedApplicationsObject.error === null || deletedApplicationsDialog.applications.length > 0">
+              <v-card>
                 <v-data-table :headers="appHeaders" :items="deletedApplicationsDialog.applications">
                   <template slot="items" slot-scope="props">
                     <tr>
@@ -35,9 +33,10 @@
                   </template>
                 </v-data-table>
               </v-card>
-              <v-card v-else>
-                <span>{{retrieveDeletedApplicationsObject.error}}</span>
-              </v-card>
+            </v-card>
+            <v-card v-else>
+              <span v-if="retrieveDeletedApplicationsObject.error">{{retrieveDeletedApplicationsObject.error}}</span>
+              <span v-else> You don't have any deleted apps </span>
             </v-card>
           </v-flex>
         </v-layout>
@@ -61,12 +60,6 @@ export default {
     ],
   }),
   computed: {
-    editFeatureDialog() {
-      return this.$store.state.notifications.editFeatureDialog;
-    },
-    deleteConfigObject() {
-      return this.$store.state.applications.deleteConfig;
-    },
     deletedApplicationsDialog() {
       return this.$store.state.notifications.deletedApplicationsDialog;
     },
@@ -91,8 +84,7 @@ export default {
       showSnackbar: "notifications/showSnackbar",
       hideDeletedApplicationsDialog: "notifications/hideDeletedApplicationsDialog",
       recoverDeletedApplication: "applications/recoverDeletedApplication",
-      retrieveApplications: "applications/retrieveApplications",
-      showSnackbar: "notifications/showSnackbar"
+      retrieveApplications: "applications/retrieveApplications"
     })
   },
   watch: {

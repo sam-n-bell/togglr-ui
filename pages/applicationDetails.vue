@@ -4,7 +4,6 @@
       <v-breadcrumbs-item nuxt to="/" exact :disabled="false">Home</v-breadcrumbs-item>
       <v-breadcrumbs-item>Application Details</v-breadcrumbs-item>
     </v-breadcrumbs>
-    {{isUserSuperAdmin}}
     <div>
       <div class="display-2 mb-4">{{ this.$route.query.appName }}</div>
       <LargeLoadingCard v-if="appDetails.loading" />
@@ -48,6 +47,9 @@
           <div class="buffer"></div>
 
           <span class="title mt-5">Features</span>
+          <!-- <v-flex xs3 sm3 md2 lg2 xl3 class="right-align">
+        <v-btn outline color="error" @click="retrieveDeletedApplicationsEvent()">Recover Application</v-btn>
+      </v-flex> -->
           <v-card flat>
             <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
@@ -116,6 +118,13 @@
               @click="addFeatureEvent"
               :loading="addInProgress"
             >Add Feature</v-btn>
+            <v-btn
+              color="success"
+              class="ml-0"
+              @click="retrieveDeletedFeaturesEvent()"
+              :loading="addInProgress"
+            >Recover Feature</v-btn>
+            <DeletedFeaturesDialog/>
           </v-card>
 
           <div class="buffer"></div>
@@ -256,6 +265,7 @@
 import LargeLoadingCard from "~/components/loading/LargeLoadingCard";
 import EditFeatureDialog from "~/components/misc/EditFeatureDialog";
 import ConfirmCancelAlert from "~/components/misc/ConfirmCancelAlert";
+import DeletedFeaturesDialog from "~/components/misc/DeletedFeaturesDialog";
 import { mapActions, mapGetters } from "vuex";
 import { Validator } from "vee-validate";
 import constants from "~/assets/constants.js";
@@ -266,7 +276,8 @@ export default {
   components: {
     LargeLoadingCard,
     EditFeatureDialog,
-    ConfirmCancelAlert
+    ConfirmCancelAlert,
+    DeletedFeaturesDialog
   },
   mounted() {
     if (!this.storedApp) {
@@ -346,6 +357,9 @@ export default {
     user() {
       return this.$store.state.authentication.user;
     },
+    retrieveDeletedFeaturesObject () {
+      return this.$store.state.applications.deletedFeatures;
+    },
     ...mapGetters({
       getApplicationDetails: "applications/getApplicationDetails",
       isUserSuperAdmin: "authentication/isUserSuperAdmin"
@@ -355,6 +369,10 @@ export default {
     async openEditFeatureDialog(appAndFeatureObjects) {
       await this.showEditFeatureDialog({ app: appAndFeatureObjects.app, feature: appAndFeatureObjects.feature });
       await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id})
+    },
+    retrieveDeletedFeaturesEvent() {
+      this.retrieveDeletedFeatures(this.storedApp.id);
+
     },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
@@ -476,11 +494,24 @@ export default {
       showConfirmCancelDialog: "notifications/showConfirmCancelDialog",
       updateWebhook: "applications/updateWebhook",
       retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
+      retrieveDeletedFeatures: "applications/retrieveDeletedFeatures",
+      showDeletedFeaturesDialog: "notifications/showDeletedFeaturesDialog"
     })
   },
   watch: {
-    isUserSuperAdmin(response) {
-      console.log('is sadmin?' + response);
+    retrieveDeletedFeaturesObject: {
+      handler(object) {
+        if (object.payload) {
+          this.showDeletedFeaturesDialog(object.payload);
+        } 
+
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
     },
     appDetails: {
       handler(object) {

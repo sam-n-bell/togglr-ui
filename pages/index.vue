@@ -18,7 +18,7 @@
         <v-btn outline color="primary" nuxt to="/addApplication">Add Application</v-btn>
       </v-flex>
       <v-flex xs3 sm3 md2 lg2 xl3 class="right-align">
-        <v-btn outline color="error" @click="retrieveDeletedApplicationsEvent()">Recover Application</v-btn>
+        <v-btn outline color="success" @click="retrieveDeletedApplicationsEvent()">Recover Application</v-btn>
       </v-flex>
     </v-layout>
     <v-layout row wrap v-if="applications.loading">

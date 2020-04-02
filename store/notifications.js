@@ -19,6 +19,10 @@ const state = () => ({
         showing: false,
         applications: []
     },
+    deletedFeaturesDialog: {
+        showing: false,
+        features: []
+    },
     confirmCancelDialog: {
         showing: false,
         title: "",
@@ -53,6 +57,12 @@ const actions = {
     },
     hideDeletedApplicationsDialog({commit}) {
         commit("hideDeletedApplicationsDialog")
+    },
+    showDeletedFeaturesDialog({commit}, features) {
+        commit("showDeletedFeaturesDialog", features)
+    },
+    hideDeletedFeaturesDialog({commit}) {
+        commit("hideDeletedFeaturesDialog")
     },
     setEditFeatureDialogConfigs({
         commit
@@ -123,10 +133,6 @@ const mutations = {
         state.snackbar.text = "";
         state.timeout = 2000;
     },
-    retrieveDeletedApplications(state) {
-        state.deletedApplicationsDialog.showing = false;
-        state.deletedApplicationsDialog.applications = [];
-    },
     showDeletedApplicationsDialog(state, applications) {
         state.deletedApplicationsDialog.showing = true;
         state.deletedApplicationsDialog.applications = applications;
@@ -135,6 +141,15 @@ const mutations = {
         state.deletedApplicationsDialog.showing = false;
         state.deletedApplicationsDialog.applications = [];
         state.deletedApplicationsDialog.error = null;
+    },
+    showDeletedFeaturesDialog(state, features) {
+        state.deletedFeaturesDialog.showing = true;
+        state.deletedFeaturesDialog.features = features;
+    },
+    hideDeletedFeaturesDialog(state) {
+        state.deletedFeaturesDialog.showing = false;
+        state.deletedFeaturesDialog.features = [];
+        state.deletedFeaturesDialog.error = null;
     },
     showEditFeatureDialog(state, appConfig) {
         state.editFeatureDialog.showing = true;
