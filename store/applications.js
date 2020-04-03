@@ -158,7 +158,8 @@ const actions = {
         commit("updateFeature");
 
         var unchainedFeature = {
-            active: !feature.active
+            active: !feature.active,
+            toggled: Date.now()
         };
 
         try {

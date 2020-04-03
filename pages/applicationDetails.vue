@@ -9,6 +9,7 @@
       <LargeLoadingCard v-if="appDetails.loading" />
       <v-card v-else-if="appDetails.payload">
         <EditFeatureDialog />
+        <ToggledDateDialogInfo />
         <v-container fluid>
           <span class="title">Application ID</span>
           <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2">
@@ -47,6 +48,7 @@
           <div class="buffer"></div>
 
           <span class="title mt-5">Features</span>
+
           <v-card flat>
             <v-data-table :headers="featureHeaders" :items="appDetails.payload.featuresById">
               <template slot="items" slot-scope="props">
@@ -83,6 +85,22 @@
                     >
                       <v-icon>delete</v-icon>
                     </v-btn>
+                    
+                    <v-btn
+                      flat
+                      color="primary"
+                      class="pa-0 ma-0"
+                      @click="showToggledDateDialog(
+                      {title:'Last Toggled',
+                      description:'The feature is toggled off since ',
+                      cancelBtnText:'CLOSE'
+                     }
+                      )"
+                    >
+                      <v-icon>info</v-icon>
+                    </v-btn>
+
+
                   </td>
                 </tr>
               </template>
@@ -197,6 +215,7 @@
 import LargeLoadingCard from "~/components/loading/LargeLoadingCard";
 import EditFeatureDialog from "~/components/misc/EditFeatureDialog";
 import ConfirmCancelAlert from "~/components/misc/ConfirmCancelAlert";
+import ToggledDateDialogInfo from "~/components/misc/ToggledDateDialogInfo";
 import { mapActions, mapGetters } from "vuex";
 import { Validator } from "vee-validate";
 import constants from "~/assets/constants.js";
@@ -207,7 +226,8 @@ export default {
   components: {
     LargeLoadingCard,
     EditFeatureDialog,
-    ConfirmCancelAlert
+    ConfirmCancelAlert,
+    ToggledDateDialogInfo
   },
   mounted() {
     if (!this.storedApp) {
@@ -221,7 +241,7 @@ export default {
     featureHeaders: [
       { text: "Feature", value: "descr", sortable: false },
       { text: "Enabled", value: "enabled", sortable: false },
-      { text: "Actions", align: "center", sortable: false }
+      { text: "Actions", align: "center", sortable: false },
     ],
     keyHeaders: [
       { text: "Key", value: "keyName", sortable: false },
@@ -313,7 +333,8 @@ export default {
             appId: this.appDetails.payload.id,
             active: false,
             id: 0,
-            negation: false
+            negation: false,
+            toggled: null
           });
           this.featureName = "";
           this.featureKey++;
@@ -365,6 +386,7 @@ export default {
       showSnackbar: "notifications/showSnackbar",
       showEditFeatureDialog: "notifications/showEditFeatureDialog",
       showConfirmCancelDialog: "notifications/showConfirmCancelDialog",
+      showToggledDateDialog: "notifications/showToggledDateDialog",
       updateWebhook: "applications/updateWebhook"
     })
   },

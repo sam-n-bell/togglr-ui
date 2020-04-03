@@ -22,7 +22,15 @@ const state = () => ({
         cancelBtnText: "",
         confirmBtnAction: null,
         cancelBtnAction: null
+    },
+   ToggledDateDialog: {
+        showing: false,
+        title: "",
+        description: "",
+        cancelBtnText: "",
+        cancelBtnAction: null
     }
+
 });
 
 //Getters are used if state needs to have logic applied before using value
@@ -68,11 +76,24 @@ const actions = {
     }, options) {
         commit("showConfirmCancelDialog", options);
     },
+
     hideConfirmCancelDialog({
         commit
     }) {
         commit("hideConfirmCancelDialog");
     },
+
+    showToggledDateDialog({
+        commit
+    }, options) {
+        commit("showToggledDateDialog", options);
+    },
+    hideToggledDateDialog({
+        commit
+    }) {
+        commit("hideToggledDateDialog");
+    },
+
     async toggleFeatureNegation({
         commit,
         state
@@ -159,6 +180,22 @@ const mutations = {
         state.confirmCancelDialog.confirmBtnAction = null;
         state.confirmCancelDialog.cancelBtnAction = null;
     },
+    showToggledDateDialog(state, options) {
+        state.ToggledDateDialog.showing = true;
+        state.ToggledDateDialog.title = options.title;
+        state.ToggledDateDialog.description = options.description;
+        state.ToggledDateDialog.cancelBtnText = options.cancelBtnText;
+        state.ToggledDateDialog.cancelBtnAction = options.cancelBtnAction;
+    },
+    hideToggledDateDialog(state) {
+        state.ToggledDateDialog.showing = false;
+        state.ToggledDateDialog.title = "";
+        state.ToggledDateDialog.description = "";
+        state.ToggledDateDialog.cancelBtnText = "";
+        state.ToggledDateDialog.cancelBtnAction = null;
+    },
+
+
     //Feature toggle
     toggleFeatureNegation(state) {},
     toggleFeatureNegationSuccess(state) {
