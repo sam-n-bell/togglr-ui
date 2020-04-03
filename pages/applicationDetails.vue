@@ -15,7 +15,7 @@
           <v-card flat :color="darkThemeEnabled ? 'darkBackground' : 'lightGrey'" class="mb-4 pa-2">
             <span class="text-xs-left">{{ appDetails.payload.id }}</span>
             <span class="float-right mr-1" @click="copyToClipboard(appDetails.payload.id)">
-              <v-icon>file_copy</v-icon>
+              <v-icon class="copy-icon">file_copy</v-icon>
             </span>
           </v-card>
 
@@ -50,7 +50,7 @@
           <span class="title mt-5">Features</span>
 
           <v-card flat>
-            <v-data-table :headers="featureHeaders" :items="appDetails.payload.featuresById">
+            <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.descr }}</td>
@@ -62,12 +62,19 @@
                     ></v-switch>
                   </td>
                   <td class="text-xs-center">
-                    <v-btn
+                    <!-- <v-btn
                       slot="activator"
                       flat
                       color="primary"
                       class="pa-0 ma-0"
                       @click="showEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
+                    > -->
+                    <v-btn
+                      slot="activator"
+                      flat
+                      color="primary"
+                      class="pa-0 ma-0"
+                      @click="openEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
                     >
                       <v-icon>edit</v-icon>
                     </v-btn>
@@ -80,7 +87,7 @@
                       description:'You are about to delete the feature ' + props.item.descr  + '. Are you sure?',
                       confirmBtnText:'Yep! Let\'s do this!',
                       cancelBtnText:'Nah, I\'m good.',
-                      confirmBtnAction: () => deleteFeatureEvent(props.index)}
+                      confirmBtnAction: () => deleteFeatureEvent(props.item.id)}
                       )"
                     >
                       <v-icon>delete</v-icon>
@@ -129,10 +136,9 @@
           </v-card>
 
           <div class="buffer"></div>
-
           <span class="title mt-5">Keys</span>
           <v-card flat>
-            <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById">
+            <v-data-table :headers="keyHeaders" :items="applicationKeys.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.keyName }}</td>
@@ -146,7 +152,7 @@
                     description:'You are about to delete the key ' + props.item.keyName  + '. Are you sure?',
                     confirmBtnText:'Yep! Let\'s do this!',
                     cancelBtnText:'Nah, I\'m good.',
-                    confirmBtnAction: () => deleteKeyEvent(props.index)}
+                    confirmBtnAction: () => deleteKeyEvent(props.item.keyName)}
                     )"
                     >
                       <v-icon>delete</v-icon>
@@ -176,6 +182,58 @@
               @click="addKeyEvent"
               :loading="addInProgress"
             >Add Key</v-btn>
+          </v-card>
+          <div class="buffer"></div>
+
+          <span class="title mt-5">Admins</span>
+            <v-card flat>
+            <v-data-table :headers="adminHeaders" :items="admins">
+              <template slot="items" slot-scope="props">
+                <tr @click="props.expanded = !props.expanded">
+                  <td>{{ props.item.id }}</td>
+                  <td  class="text-xs-center">
+                    <v-btn
+                      v-if="isUserSuperAdmin && props.item.id !== user"
+                      flat
+                      color="error"
+                      class="pa-0 ma-0"
+                      @click="showConfirmCancelDialog(
+                    {title:'Remove Admin',
+                    description:'You are about to remove ' +  props.item.id + ' from ' +  appDetails.payload.name+ '. Are you sure?',
+                    confirmBtnText: 'Yep! Let\'s do this!',//'Yep! Let\'s do this!',
+                    cancelBtnText:'Nah, I\'m good.',
+                    confirmBtnAction: () => deleteAdminEvent(props.item.id)}
+                    )"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                    <!-- Not using v-else here so the span's text does not appear on the current user's row in the table -->
+                    <span v-if="!isUserSuperAdmin && props.item.id !== user">SuperAdmin Role Required</span>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+           <v-text-field
+              v-validate="'required|specialChars'"
+              v-model="adminId"
+              required
+              data-vv-name="adminId"
+              data-vv-as="Admin ID"
+              name="adminId"
+              label="Admin ID"
+              :key=adminKey
+              type="text"
+              v-on:keyup.enter="addAdminEvent"
+              clearable
+              :error-messages="errors.collect('adminId')"
+            ></v-text-field>
+            <v-btn
+              color="primary"
+              class="ml-0"
+              :disabled="errors.has('adminId')"
+              @click="addAdminEvent"
+              :loading="addInProgress"
+            >Add Admin</v-btn>
           </v-card>
 
           <v-expansion-panel class="elevation-0 ml-0 mt-5">
@@ -235,16 +293,22 @@ export default {
     } else {
       this.webhookUrl = this.storedApp.webhookUrl;
       this.retrieveApplicationDetails(this.storedApp.id);
+      this.retrieveApplicationFeatures(this.storedApp.id);
+      this.retrieveApplicationKeys(this.storedApp.id);
     }
   },
   data: () => ({
     featureHeaders: [
-      { text: "Feature", value: "descr", sortable: false },
-      { text: "Enabled", value: "enabled", sortable: false },
-      { text: "Actions", align: "center", sortable: false },
+      { text: "Feature", value: "descr", sortable: true },
+      { text: "Enabled", value: "enabled", sortable: true },
+      { text: "Actions", align: "center", sortable: false }
     ],
     keyHeaders: [
-      { text: "Key", value: "keyName", sortable: false },
+      { text: "Key", value: "keyName", sortable: true },
+      { text: "Actions", align: "center", sortable: false }
+    ],
+    adminHeaders: [
+      { text: "Admin", value: "id", sortable: true},
       { text: "Actions", align: "center", sortable: false }
     ],
     admins: [],
@@ -252,6 +316,8 @@ export default {
     editFeatureDialog: false,
     loaded: false,
     snackbar: false,
+    adminId: "",
+    adminKey: 0,
     featureName: "",
     featureKey: 0,
     keyName: "",
@@ -281,6 +347,12 @@ export default {
     appDetails() {
       return this.$store.state.applications.appDetails;
     },
+    applicationFeatures () {
+      return this.$store.state.applications.applicationFeatures;
+    },
+    applicationKeys () {
+      return this.$store.state.applications.applicationKeys;
+    },
     deleteApplicationObject() {
       return this.$store.state.applications.deleteApplication;
     },
@@ -290,11 +362,19 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
+    user() {
+      return this.$store.state.authentication.user;
+    },
     ...mapGetters({
-      getApplicationDetails: "applications/getApplicationDetails"
+      getApplicationDetails: "applications/getApplicationDetails",
+      isUserSuperAdmin: "authentication/isUserSuperAdmin"
     })
   },
   methods: {
+    async openEditFeatureDialog(appAndFeatureObjects) {
+      await this.showEditFeatureDialog({ app: appAndFeatureObjects.app, feature: appAndFeatureObjects.feature });
+      await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id})
+    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;
@@ -325,8 +405,23 @@ export default {
       }
       */
     },
+    deleteAdminEvent(adminId) {
+       this.deleteAdmin({admin: {id: adminId, appId: this.appDetails.payload.id}});
+    },
+    addAdminEvent() {
+        this.$validator.validate("adminId", this.adminId).then(res => {
+        if (res) {
+          this.addAdmin({
+            id: this.adminId,
+            appId: this.appDetails.payload.id
+          });
+          this.adminId = "";
+          this.adminKey++;        
+          }
+      });
+    },
     addFeatureEvent() {
-      this.$validator.validate("featureName", this.featureName).then(res => {
+      this.$validator.validate("featureName", this.featureName).then(async res => {
         if (res) {
           this.addFeature({
             descr: this.featureName,
@@ -341,13 +436,17 @@ export default {
         }
       });
     },
-    deleteFeatureEvent(index) {
-      this.deleteFeature(this.appDetails.payload.featuresById[index]);
+    deleteFeatureEvent(featureId) {
+      let featureToDelete = this.applicationFeatures.payload.filter(feature => feature.id === featureId);
+      if (featureToDelete.length > 0) {
+        this.deleteFeature(featureToDelete[0])
+      }
+      // this.deleteFeature(this.applicationFeatures.payload[index]);
     },
     addKeyEvent() {
-      this.$validator.validate("keyName", this.keyName).then(res => {
+      this.$validator.validate("keyName", this.keyName).then(async res => {
         if (res) {
-          this.addKey({
+          await this.addKey({
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
@@ -356,8 +455,12 @@ export default {
         }
       });
     },
-    deleteKeyEvent(index) {
-      this.deleteKey(this.appDetails.payload.keysById[index]);
+    deleteKeyEvent(keyName) {
+      let keyToDelete = this.applicationKeys.payload.filter(key => key.keyName === keyName);
+      if (keyToDelete.length > 0) {
+        this.deleteKey(keyToDelete[0])
+      }
+      // this.deleteKey(this.applicationKeys.payload[index]);
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);
@@ -369,12 +472,16 @@ export default {
       let newDetails = {
         id: this.appDetails.payload.id,
         webhookUrl: this.webhookUrl
+        
       };
-
+      // page refresh on webhook update
+      this.retrieveApplicationDetails(this.storedApp.id);
       this.updateWebhook(newDetails);
     },
     ...mapActions({
       retrieveApplicationDetails: "applications/retrieveApplicationDetails",
+      retrieveApplicationFeatures: "applications/retrieveApplicationFeatures",
+      retrieveApplicationKeys: "applications/retrieveApplicationKeys",
       deleteApplication: "applications/deleteApplication",
       updateApplication: "applications/updateFeature",
       addAdmin: "applications/addAdmin",
@@ -386,11 +493,14 @@ export default {
       showSnackbar: "notifications/showSnackbar",
       showEditFeatureDialog: "notifications/showEditFeatureDialog",
       showConfirmCancelDialog: "notifications/showConfirmCancelDialog",
-      showToggledDateDialog: "notifications/showToggledDateDialog",
-      updateWebhook: "applications/updateWebhook"
+      updateWebhook: "applications/updateWebhook",
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
     })
   },
   watch: {
+    isUserSuperAdmin(response) {
+      console.log('is sadmin?' + response);
+    },
     appDetails: {
       handler(object) {
         if (object.payload) {
@@ -429,21 +539,22 @@ export default {
     },
     admins: {
       handler(newAdmins, oldAdmins) {
-        if (this.loaded) {
-          //Adding an admin
-          if (newAdmins.length > oldAdmins.length) {
-            var adminToAdd = newAdmins.filter(
-              admin => !oldAdmins.includes(admin)
-            );
+        // if (this.loaded) {
+        //   console.log('admisn changed')
+        //   //Adding an admin
+        //   if (newAdmins.length > oldAdmins.length) {
+        //     var adminToAdd = newAdmins.filter(
+        //       admin => !oldAdmins.includes(admin)
+        //     );
 
-            if (adminToAdd.length > 0) {
-              this.addAdmin({
-                id: adminToAdd[0],
-                appId: this.appDetails.payload.id
-              });
-            }
-          }
-        }
+        //     if (adminToAdd.length > 0) {
+        //       this.addAdmin({
+        //         id: adminToAdd[0],
+        //         appId: this.appDetails.payload.id
+        //       });
+        //     }
+        //   }
+        // }
         this.loaded = true;
       }
     },
@@ -469,4 +580,14 @@ export default {
 .buffer {
   height: 40px;
 }
+.copy-icon{
+-webkit-user-select: none; /* Chrome/Safari */        
+-moz-user-select: none; /* Firefox */
+-ms-user-select: none; /* IE10+ */
+-khtml-user-select: none; /* webkit (konqueror) browsers */
+/* Rules below not implemented in browsers yet */
+-o-user-select: none;
+user-select: none;
+}
+
 </style>

@@ -12,6 +12,7 @@ const state = () => ({
     editFeatureDialog: {
         showing: false,
         feature: null,
+        configs: [],
         appDetails: null
     },
     confirmCancelDialog: {
@@ -50,6 +51,11 @@ const actions = {
         commit
     }) {
         commit("hideSnackbar");
+    },
+    setEditFeatureDialogConfigs({
+        commit
+    }, configs) {
+        commit("setEditFeatureDialogConfigs", configs);
     },
     showEditFeatureDialog({
         commit
@@ -133,21 +139,27 @@ const mutations = {
         state.editFeatureDialog.feature = appConfig.feature;
         state.editFeatureDialog.appDetails = appConfig.app;
         state.editFeatureDialog.configsById = appConfig.feature.configsById;
+        state.editFeatureDialog.configs = []
     },
     hideEditFeatureDialog(state) {
         state.editFeatureDialog.showing = false;
         state.editFeatureDialog.feature = null;
     },
-    editFeatureConfigDeleted(state, configId) {
-        var index = state.editFeatureDialog.feature.configsById.findIndex(
-            config => config.appId === configId.appId &&
-            config.keyName === configId.keyName &&
-            config.configValue === configId.configValue &&
-            config.featureId === configId.featureId
+    setEditFeatureDialogConfigs(state, configs) {
+        state.editFeatureDialog.configs = configs;
+    },
+    editFeatureConfigDeleted(state, deletedConfig) {
+        // finds where (index position) in the editFeatureDialog.configs the recently deleted config is
+        let index = state.editFeatureDialog.configs.findIndex(
+            config => config.appId === deletedConfig.appId &&
+            config.keyName === deletedConfig.keyName &&
+            config.configValue === deletedConfig.configValue &&
+            config.featureId === deletedConfig.featureId
         );
 
-        if (index > -1) {
-            state.editFeatureDialog.feature.configsById.splice(index, 1);
+        // removes it from that array that is populating the UI
+        if (index > -1 ) {
+            state.editFeatureDialog.configs.splice(index, 1);
         }
     },
     editFeatureCorpDeleted(state, corpId) {
@@ -160,7 +172,8 @@ const mutations = {
         }
     },
     editFeatureConfigAdded(state, config) {
-        state.editFeatureDialog.feature.configsById.push(config);
+        // state.editFeatureDialog.feature.configsById.push(config);
+        state.editFeatureDialog.configs.push(config);
     },
     showConfirmCancelDialog(state, options) {
         state.confirmCancelDialog.showing = true;
