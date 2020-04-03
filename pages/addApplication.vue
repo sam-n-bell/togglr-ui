@@ -61,7 +61,8 @@ export default {
           this.createApplication({
             name: this.name,
             descr: this.description,
-            adminsById: this.admins
+            adminsById: this.admins,
+            deleted: false
           });
         }
       });

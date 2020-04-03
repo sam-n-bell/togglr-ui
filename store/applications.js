@@ -173,7 +173,6 @@ const actions = {
                 commit("retrieveDeletedApplicationsSuccess", []);
             }
         } catch (error) {
-            console.log(error);
             commit("retrieveDeletedApplicationsFailure", error.message);
         } 
     },
@@ -183,10 +182,9 @@ const actions = {
     }, feature) {
         commit("recoverDeletedFeature")
         try {
-            const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedFeature}${feature.id}/recover`);
-            commit("recoverDeletedFeatureSuccess", app);
+            await this.$axios.$patch(`${constants.urlConstants.recoverDeletedFeature}${feature.id}/recover`);
+            commit("recoverDeletedFeatureSuccess", feature);
         } catch (error) {
-            console.log(error);
             commit("recoverDeletedFeatureFailure", error.message);
         }
     },

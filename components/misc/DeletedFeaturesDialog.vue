@@ -72,6 +72,7 @@ export default {
   methods: {
     async recoverFeatureEvent (feature) {
       await this.recoverDeletedFeature(feature);
+      console.log(this.recoverFeatureObject)
       if (this.recoverFeatureObject.error === null) {
         this.showSnackbar({
             text: "Feature recovered"
