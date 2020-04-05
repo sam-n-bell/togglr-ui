@@ -554,11 +554,19 @@ const mutations = {
         state.deletedFeatures.payload = [];
         state.deletedFeatures.error = error;
     },
-    recoverDeletedFeatureSuccess(state, app) {
-        state.recoverFeature.payload = app
+    recoverDeletedFeatureSuccess(state, feature) {
+        let index = state.deletedFeatures.payload.findIndex(
+            feat => feat.id === feature.id
+        )
+
+        if (index > -1) {
+            state.deletedFeatures.payload.splice(index, 1);
+        }
+        state.recoverFeature.payload = feature
         state.recoverFeature.loading = false;
         state.recoverFeature.error = null
-        state.applicationFeatures.payload.push(app)
+        state.applicationFeatures.payload.push(feature)
+
     },
     recoverDeletedFeatureFailure(state, error) {
         state.recoverFeature.payload = null;

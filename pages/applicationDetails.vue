@@ -447,7 +447,8 @@ export default {
         if (res) {
           await this.addKey({
             keyName: this.keyName,
-            appId: this.appDetails.payload.id
+            appId: this.appDetails.payload.id,
+            deleted: false
           });
           this.keyName = "";
           this.keyKey++;
