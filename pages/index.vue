@@ -63,6 +63,7 @@ export default {
   }),
   mounted() {
     this.retrieveApplications();
+    console.log(this.$moment('2020-04-05').format('MMMM YYYY'))
   },
   computed: {
     applications() {

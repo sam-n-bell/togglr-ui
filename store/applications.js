@@ -166,7 +166,6 @@ const actions = {
             const recover = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedApplication}${app.id}/recover`);
             commit("recoverDeletedApplicationSuccess", app);
         } catch (error) {
-            console.log(error);
             commit("recoverDeletedApplicationFailure", error.message);
         }
     },
@@ -643,8 +642,6 @@ const mutations = {
         state.recoverKey.payload = key
         state.recoverKey.loading = false;
         state.recoverKey.error = null
-        console.log('adding to keys')
-        console.log(key);
         state.applicationKeys.payload.push(key)
 
     },
