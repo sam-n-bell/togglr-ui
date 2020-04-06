@@ -273,8 +273,8 @@ export default {
     } else {
       this.webhookUrl = this.storedApp.webhookUrl;
       this.retrieveApplicationDetails(this.storedApp.id);
-      this.retrieveApplicationFeatures(this.storedApp.id);
-      this.retrieveApplicationKeys(this.storedApp.id);
+      this.retrieveApplicationFeatures({appId: this.storedApp.id, sortBy: 'descr', sortOrder: 'asc'});
+      this.retrieveApplicationKeys({appId: this.storedApp.id, sortBy: 'keyName', sortOrder: 'asc'});
     }
   },
   data: () => ({
@@ -477,9 +477,6 @@ export default {
     })
   },
   watch: {
-    isUserSuperAdmin(response) {
-      console.log('is sadmin?' + response);
-    },
     appDetails: {
       handler(object) {
         if (object.payload) {

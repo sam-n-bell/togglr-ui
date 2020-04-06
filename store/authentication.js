@@ -26,7 +26,6 @@ const getters = {
     },
     isUserSuperAdmin: state => {
         if (state.roles){
-            console.log('checking user authorities');
             let superAdmin = state.roles.filter(
                 role => role.authority.toUpperCase() === 'ROLE_SUPERADMIN'
             );

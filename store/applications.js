@@ -203,11 +203,13 @@ const actions = {
     async retrieveApplicationFeatures({
         commit,
         dispatch
-    }, appId, sortBy="descr", sortOrder="asc") {
+    }, payload) {
         commit("retrieveApplicationFeatures")
         try {
+            if (!payload.sortBy) payload.sortBy = 'descr';
+            if (!payload.sortOrder) payload.sortOrder = 'asc';
             const features = await this.$axios.$get(
-                `${constants.urlConstants.retrieveApplicationFeatures}${appId}&sort=${sortBy},${sortOrder}`
+                `${constants.urlConstants.retrieveApplicationFeatures}${payload.appId}&sort=${payload.sortBy},${payload.sortOrder}`
             );
             if (features._embedded && features._embedded.featureEntities) {
                 commit("retrieveApplicationFeaturesSuccess", features._embedded.featureEntities);
@@ -245,11 +247,13 @@ const actions = {
     async retrieveApplicationKeys({
         commit,
         dispatch
-    }, appId, sortBy="keyName", sortOrder="asc") {
+    }, payload) {
         commit("retrieveApplicationKeys")
         try {
+            if (!payload.sortBy) payload.sortBy = 'keyName';
+            if (!payload.sortOrder) payload.sortOrder = 'asc';
             const keys = await this.$axios.$get(
-                `${constants.urlConstants.retrieveApplicationKeys}${appId}&sort=${sortBy},${sortOrder}`
+                `${constants.urlConstants.retrieveApplicationKeys}${payload.appId}&sort=${payload.sortBy},${payload.sortOrder}`
             );
             if (keys._embedded && keys._embedded.keysEntities) {
                 commit("retrieveApplicationKeysSuccess", keys._embedded.keysEntities);
