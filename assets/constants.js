@@ -9,6 +9,7 @@ var systemConstants = Object.freeze({
 let baseURL = "/togglr-api/"
 var urlConstants = Object.freeze({
     projection: `?projection=includeSubObjects`,
+
     retrieveApplications: `${baseURL}appEntities`,
     appEntites: `${baseURL}appEntities/`,
     addApplicationPOST: `${baseURL}appEntities`,
@@ -16,8 +17,13 @@ var urlConstants = Object.freeze({
     deleteApplication: `${baseURL}appEntities/`,
     retrieveDeletedpplications: `${baseURL}appEntities/deleted`,
     recoverDeletedApplication: `${baseURL}appEntities/`,
+
     retrieveDeletedFeaturesForApp: `${baseURL}/featureEntities/search/findByAppIdAndDeletedIsTrue?appId=`,
     recoverDeletedFeature: `${baseURL}/featureEntities/`,
+
+    retrieveDeletedKeysForApp: `${baseURL}/keysEntities/search/findByAppIdAndDeletedIsTrue?appId=`,
+    recoverDeletedKey: `${baseURL}/keysEntities/`,
+
     retrieveApplicationFeatures: `${baseURL}featureEntities/search/findByAppId?appId=`,
     retrieveApplicationKeys: `${baseURL}keysEntities/search/findByAppId?appId=`,
     retrieveConfigsByApplicationAndFeature: `${baseURL}configsEntities/search/findByAppIdAndFeatureId?appId=`,

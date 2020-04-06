@@ -27,6 +27,16 @@ const state = () => ({
         loading: false,
         error: null
     },
+    deletedKeys: {
+        loading: false,
+        payload: [],
+        error: null
+    },
+    recoverKey: {
+        payload: null,
+        loading: false,
+        error: null
+    },
     createApplication: {
         payload: null,
         loading: false,
@@ -201,8 +211,35 @@ const actions = {
                 commit("retrieveDeletedFeaturesSuccess", []);
             }
         } catch (error) {
-            console.log(error);
             commit("retrieveDeletedFeaturesFailure", error.message);
+        } 
+    },
+    async recoverDeletedKey({
+        commit,
+        dispatch
+    }, payload) {
+        commit("recoverDeletedKeys")
+        try {
+            let key = await this.$axios.$patch(`${constants.urlConstants.recoverDeletedKey}${payload.appId}_${payload.keyName}/recover`);
+            commit("recoverDeletedKeySuccess", key);
+        } catch (error) {
+            commit("recoverDeletedKeysFailure", error.message);
+        }
+    },
+    async retrieveDeletedKeys({
+        commit,
+        dispatch
+    }, appId) {
+        commit("retrieveDeletedKeys")
+        try {
+            const apps = await this.$axios.$get(`${constants.urlConstants.retrieveDeletedKeysForApp}${appId}`);
+            if (apps._embedded && apps._embedded.keysEntities) {
+               commit("retrieveDeletedKeysSuccess", apps._embedded.keysEntities);
+            } else {
+                commit("retrieveDeletedKeysSuccess", []);
+            }
+        } catch (error) {
+            commit("retrieveDeletedKeysFailure", error.message);
         } 
     },
     async createApplication({
@@ -503,11 +540,6 @@ const actions = {
 
 //Mutations are used to change the state.  The state should only be changed through mutations to keep a record.
 const mutations = {
-    recoverDeletedApplication(state) {
-        state.recoverApplication.payload = null;
-        state.recoverApplication.loading = true;
-        state.recoverApplication.error = null
-    },
     retrieveDeletedApplications(state) {
         state.deletedApplications.loading = true;
         state.deletedApplications.payload = [];
@@ -523,6 +555,11 @@ const mutations = {
         state.deletedApplications.payload = [];
         state.deletedApplications.error = error;
     },
+    recoverDeletedApplication(state) {
+        state.recoverApplication.payload = null;
+        state.recoverApplication.loading = true;
+        state.recoverApplication.error = null
+    },
     recoverDeletedApplicationSuccess(state, app) {
         state.recoverApplication.payload = app
         state.recoverApplication.loading = false;
@@ -534,25 +571,25 @@ const mutations = {
         state.recoverApplication.loading = false;
         state.recoverApplication.error = error
     },
-    recoverDeletedFeature(state) {
-        state.recoverFeature.payload = null;
-        state.recoverFeature.loading = true;
-        state.recoverFeature.error = null
-    },
     retrieveDeletedFeatures(state) {
         state.deletedFeatures.loading = true;
         state.deletedFeatures.payload = [];
         state.deletedFeatures.error = null;
     },
-    retrieveDeletedFeaturesSuccess(state, applications) {
+    retrieveDeletedFeaturesSuccess(state, features) {
         state.deletedFeatures.loading = false;
-        state.deletedFeatures.payload = applications;
+        state.deletedFeatures.payload = features;
         state.deletedFeatures.error = null;
     },
     retrieveDeletedFeaturesFailure(state, error) {
         state.deletedFeatures.loading = false;
         state.deletedFeatures.payload = [];
         state.deletedFeatures.error = error;
+    },
+    recoverDeletedFeature(state) {
+        state.recoverFeature.payload = null;
+        state.recoverFeature.loading = true;
+        state.recoverFeature.error = null
     },
     recoverDeletedFeatureSuccess(state, feature) {
         let index = state.deletedFeatures.payload.findIndex(
@@ -572,6 +609,49 @@ const mutations = {
         state.recoverFeature.payload = null;
         state.recoverFeature.loading = false;
         state.recoverFeature.error = error
+    },
+    // Retrieve soft deleted keys for an appId
+    retrieveDeletedKeys(state) {
+        state.deletedKeys.loading = true;
+        state.deletedKeys.payload = [];
+        state.deletedKeys.error = null;
+    },
+    retrieveDeletedKeysSuccess(state, keys) {
+        state.deletedKeys.loading = false;
+        state.deletedKeys.payload = keys;
+        state.deletedKeys.error = null;
+    },
+    retrieveDeletedKeysFailure(state, error) {
+        state.deletedKeys.loading = false;
+        state.deletedKeys.payload = [];
+        state.deletedKeys.error = error;
+    },
+    // Recover a soft deleted key
+    recoverDeletedKey(state) {
+        state.recoverKey.payload = null;
+        state.recoverKey.loading = true;
+        state.recoverKey.error = null
+    },
+    recoverDeletedKeySuccess(state, key) {
+        let index = state.deletedFeatures.payload.findIndex(
+            appKey => appKey.keyName === key.keyName
+        )
+
+        if (index > -1) {
+            state.deletedKeys.payload.splice(index, 1);
+        }
+        state.recoverKey.payload = key
+        state.recoverKey.loading = false;
+        state.recoverKey.error = null
+        console.log('adding to keys')
+        console.log(key);
+        state.applicationKeys.payload.push(key)
+
+    },
+    recoverDeletedKeyFailure(state, error) {
+        state.recoverKey.payload = null;
+        state.recoverKey.loading = false;
+        state.recoverKey.error = error
     },
     //Retrieve Applications
     retrieveApplications(state) {

@@ -174,6 +174,13 @@
               @click="addKeyEvent"
               :loading="addInProgress"
             >Add Key</v-btn>
+            <v-btn
+              color="success"
+              class="ml-0"
+              @click="retrieveDeletedKeysEvent()"
+              :loading="addInProgress"
+            >Recover Key</v-btn>
+            <DeletedKeysDialog/>
           </v-card>
           <div class="buffer"></div>
 
@@ -266,6 +273,7 @@ import LargeLoadingCard from "~/components/loading/LargeLoadingCard";
 import EditFeatureDialog from "~/components/misc/EditFeatureDialog";
 import ConfirmCancelAlert from "~/components/misc/ConfirmCancelAlert";
 import DeletedFeaturesDialog from "~/components/misc/DeletedFeaturesDialog";
+import DeletedKeysDialog from "~/components/misc/DeletedKeysDialog";
 import { mapActions, mapGetters } from "vuex";
 import { Validator } from "vee-validate";
 import constants from "~/assets/constants.js";
@@ -277,7 +285,8 @@ export default {
     LargeLoadingCard,
     EditFeatureDialog,
     ConfirmCancelAlert,
-    DeletedFeaturesDialog
+    DeletedFeaturesDialog,
+    DeletedKeysDialog
   },
   mounted() {
     if (!this.storedApp) {
@@ -360,6 +369,9 @@ export default {
     retrieveDeletedFeaturesObject () {
       return this.$store.state.applications.deletedFeatures;
     },
+    retrieveDeletedKeysObject () {
+      return this.$store.state.applications.deletedKeys;
+    },
     ...mapGetters({
       getApplicationDetails: "applications/getApplicationDetails",
       isUserSuperAdmin: "authentication/isUserSuperAdmin"
@@ -372,7 +384,9 @@ export default {
     },
     retrieveDeletedFeaturesEvent() {
       this.retrieveDeletedFeatures(this.storedApp.id);
-
+    },
+    retrieveDeletedKeysEvent() {
+      this.retrieveDeletedKeys(this.storedApp.id);
     },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
@@ -496,10 +510,26 @@ export default {
       updateWebhook: "applications/updateWebhook",
       retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
       retrieveDeletedFeatures: "applications/retrieveDeletedFeatures",
-      showDeletedFeaturesDialog: "notifications/showDeletedFeaturesDialog"
+      retrieveDeletedKeys: "applications/retrieveDeletedKeys",
+      showDeletedFeaturesDialog: "notifications/showDeletedFeaturesDialog",
+      showDeletedKeysDialog: "notifications/showDeletedKeysDialog"
     })
   },
   watch: {
+    retrieveDeletedKeysObject: {
+      handler(object) {
+        if (object.payload) {
+          this.showDeletedKeysDialog(object.payload);
+        } 
+
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
+    },
     retrieveDeletedFeaturesObject: {
       handler(object) {
         if (object.payload) {

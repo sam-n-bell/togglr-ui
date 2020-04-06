@@ -23,6 +23,10 @@ const state = () => ({
         showing: false,
         features: []
     },
+    deletedKeysDialog: {
+        showing: false,
+        keys: []
+    },
     confirmCancelDialog: {
         showing: false,
         title: "",
@@ -63,6 +67,12 @@ const actions = {
     },
     hideDeletedFeaturesDialog({commit}) {
         commit("hideDeletedFeaturesDialog")
+    },
+    showDeletedKeysDialog({commit}, keys) {
+        commit("showDeletedKeysDialog", keys)
+    },
+    hideDeletedKeysDialog({commit}) {
+        commit("hideDeletedKeysDialog")
     },
     setEditFeatureDialogConfigs({
         commit
@@ -150,6 +160,15 @@ const mutations = {
         state.deletedFeaturesDialog.showing = false;
         state.deletedFeaturesDialog.features = [];
         state.deletedFeaturesDialog.error = null;
+    },
+    showDeletedKeysDialog(state, keys) {
+        state.deletedKeysDialog.showing = true;
+        state.deletedKeysDialog.keys = keys;
+    },
+    hideDeletedKeysDialog(state) {
+        state.deletedKeysDialog.showing = false;
+        state.deletedKeysDialog.keys = [];
+        state.deletedKeysDialog.error = null;
     },
     showEditFeatureDialog(state, appConfig) {
         state.editFeatureDialog.showing = true;
