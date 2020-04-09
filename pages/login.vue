@@ -101,11 +101,13 @@ export default {
         }
       });
     },
-githubLogin(){
+async githubLogin(){
 // this.$router.go('www.google.com');
-console.log(this.ssodata.data);
 window.open(this.ssodata.data,"_self");
+// let code = await this.$axios.get(this.ssodata.data);
+// console.log(code);
 },
+
     ...mapActions({
       login: "authentication/login"
     })
