@@ -51,9 +51,9 @@
             color="primary"
             class="mb-4 ml-3 mr-3"
             block
-            @click="githubLogin"
+            @click="ssoLogin()"
             :loading="loginInProgress"
-          >Login with GitHub</v-btn>
+          >SSO Login</v-btn>
         </v-card-actions>
       </v-card>
 
@@ -75,7 +75,7 @@ export default {
     username: "",
     password: "",
     appName: constants.systemConstants.appName,
-    ssodata: ""
+    ssoUrl: ""
   }),
   computed: {
     loginInProgress() {
@@ -101,13 +101,9 @@ export default {
         }
       });
     },
-async githubLogin(){
-// this.$router.go('www.google.com');
-window.open(this.ssodata.data,"_self");
-// let code = await this.$axios.get(this.ssodata.data);
-// console.log(code);
-},
-
+    async ssoLogin(){
+      window.open(this.ssoUrl,"_self");
+    },
     ...mapActions({
       login: "authentication/login"
     })
@@ -120,12 +116,11 @@ window.open(this.ssodata.data,"_self");
     }
   },
 async mounted() {
-
     try {
-      this.ssodata = await this.$axios.get(`${constants.urlConstants.ssologin}`);
-      console.log(ssodata.data);
+      let sso = await this.$axios.get(`${constants.urlConstants.ssologin}`);
+      this.ssoUrl = sso.data
     } catch (err) {
- console.log(err);
+      console.log(err);
     }
   }
 

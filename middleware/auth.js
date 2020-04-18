@@ -12,6 +12,7 @@ export default function(context) {
     if (!context.store.getters["authentication/isUserAuthenticated"]) {
 
         const jwt = Cookie.get(constants.systemConstants.authCookieIdentifer);
+        const bearer = Cookie.get(constants.systemConstants.ssoCookieIdentifier);
 
         if (jwt) {
             context.$axios.defaults.headers.common[
