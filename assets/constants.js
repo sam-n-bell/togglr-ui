@@ -1,7 +1,8 @@
 var systemConstants = Object.freeze({
     appName: "Togglr",
     userSettingsCookieName: "togglr-settings-token",
-    authCookieIdentifer: "X-TOGGLR-TOKEN",
+    togglrAuthCookieIdentifer: "X-TOGGLR-TOKEN",
+    oauthCookieIdentifier: "OAUTH-TOKEN",
     featureFlagAppId: 3,
     version: "0.9.0"
 });

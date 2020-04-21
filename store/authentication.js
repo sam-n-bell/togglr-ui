@@ -18,7 +18,7 @@ const getters = {
     isUserAuthenticated: state => {
 
         const token = Cookie.get(
-            constants.systemConstants.authCookieIdentifer
+            constants.systemConstants.togglrAuthCookieIdentifer
         );
 
         return !!state.user || !!token;
@@ -93,9 +93,9 @@ const actions = {
 const mutations = {
     saveJWT(state, jwt) {
         state.jwt = jwt;
-
         let decoded = jsonwebtoken.decode(jwt);
         state.user = decoded.details.username;
+        console.log(state.user);
     },
     login(state) {
         state.loginInProgress = true;
@@ -122,6 +122,8 @@ const mutations = {
         state.logoutDialogShowing = false;
         state.user = null;
         state.jwt = null;
+        Cookie.remove(constants.systemConstants.togglrAuthCookieIdentifer, {path: '/'});
+        Cookie.remove(constants.systemConstants.oauthCookieIdentifier, {path:'/'})
     },
     showLogoutDialog(state) {
         state.logoutDialogShowing = true;
