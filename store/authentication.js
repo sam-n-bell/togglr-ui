@@ -123,7 +123,9 @@ const mutations = {
         state.user = null;
         state.jwt = null;
         Cookie.remove(constants.systemConstants.togglrAuthCookieIdentifer, {path: '/'});
-        Cookie.remove(constants.systemConstants.oauthCookieIdentifier, {path:'/'})
+        Cookie.remove(constants.systemConstants.oauthCookieIdentifier, {path:'/'});
+        delete this.$axios.defaults.headers.common["Authorization"];
+        delete this.$axios.defaults.headers.common[constants.systemConstants.togglrAuthCookieIdentifer];
     },
     showLogoutDialog(state) {
         state.logoutDialogShowing = true;
