@@ -75,7 +75,6 @@ const actions = {
             commit("logout");
         } catch (error) {
             commit("logout");
-            console.log("Logout failure:", error.message);
         }
     },
     showLogoutDialog({
@@ -95,7 +94,6 @@ const mutations = {
         state.jwt = jwt;
         let decoded = jsonwebtoken.decode(jwt);
         state.user = decoded.details.username;
-        console.log(state.user);
     },
     login(state) {
         state.loginInProgress = true;
