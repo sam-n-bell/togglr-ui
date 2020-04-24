@@ -3,6 +3,7 @@ var systemConstants = Object.freeze({
     userSettingsCookieName: "togglr-settings-token",
     togglrAuthCookieIdentifer: "X-TOGGLR-TOKEN",
     oauthCookieIdentifier: "OAUTH-TOKEN",
+    oauthHeader: "Authorization",
     featureFlagAppId: 3,
     version: "0.9.0"
 });
