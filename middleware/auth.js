@@ -35,7 +35,7 @@ export default function(context) {
         const oauthBearer = Cookie.get(constants.systemConstants.oauthCookieIdentifier);
         
         if (oauthBearer) {
-            context.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + oauthBearer
+            context.$axios.defaults.headers.common[constants.systemConstants.oauthHeader] = 'Bearer ' + oauthBearer
         }
         
         if (jwt) {
