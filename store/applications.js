@@ -197,7 +197,11 @@ const actions = {
             );
             commit("addAdminSuccess", details);
         } catch (error) {
-            commit("addAdminFailure", error.message);
+            let errorMessage = error.message;
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.message;
+            }
+            commit("addAdminFailure", errorMessage);
         }
     },
     async retrieveApplicationFeatures({
@@ -283,7 +287,11 @@ const actions = {
             });
 
         } catch (error) {
-            commit("addFeatureFailure", error.message);
+            let errorMessage = error.message;
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.message;
+            }
+            commit("addFeatureFailure", errorMessage);
         }
     },
     async addKey({
@@ -292,12 +300,14 @@ const actions = {
     }, key) {
         commit("addKey");
         try {
+
             const details = await this.$axios.$post(
                 constants.urlConstants.updateKey,
                 key, {
                     timeout: 5000
                 }
             );
+
             commit("addKeySuccess", details);
 
             dispatch("notifications/showSnackbar", {
@@ -307,7 +317,11 @@ const actions = {
             });
 
         } catch (error) {
-            commit("addKeyFailure", error.message);
+            let errorMessage = error.message;
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.message;
+            }
+            commit("addKeyFailure", errorMessage);
         }
     },
     async addConfig({
@@ -331,7 +345,11 @@ const actions = {
                 root: true
             });
         } catch (error) {
-            commit("addConfigFailure", error.message);
+            let errorMessage = error.message;
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.message;
+            }
+            commit("addConfigFailure", errorMessage);
         }
     },
     async deleteApplication({

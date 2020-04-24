@@ -44,6 +44,7 @@
                 @keyup="trackKeyFieldLastTypedIn(key.keyName)"
                 @click="comboChanged(key.keyName)"
                 :append-icon="null"
+                hint="Letters, numbers, and hyphens only"
                 chips
                 solo
                 multiple
@@ -96,6 +97,9 @@ export default {
     lastKeyFieldEntered:""
   }),
   computed: {
+    addConfigObject() {
+      return this.$store.state.applications.addConfig;
+    },
     editFeatureDialog() {
       return this.$store.state.notifications.editFeatureDialog;
     },
@@ -168,6 +172,16 @@ export default {
     })
   },
   watch: {
+    addConfigObject: {
+      handler(object) {
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
+    },
     editFeatureDialog: {
       handler(object) {
         if (object.feature) {

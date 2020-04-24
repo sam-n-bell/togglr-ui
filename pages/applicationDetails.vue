@@ -342,6 +342,15 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
+    addKeyObject() {
+      return this.$store.state.applications.addKey;
+    },
+    addFeatureObject() {
+      return this.$store.state.applications.addFeature;
+    },
+    addAdminObject() {
+      return this.$store.state.applications.addAdmin;
+    },
     user() {
       return this.$store.state.authentication.user;
     },
@@ -420,7 +429,6 @@ export default {
       if (featureToDelete.length > 0) {
         this.deleteFeature(featureToDelete[0])
       }
-      // this.deleteFeature(this.applicationFeatures.payload[index]);
     },
     addKeyEvent() {
       this.$validator.validate("keyName", this.keyName).then(async res => {
@@ -439,7 +447,6 @@ export default {
       if (keyToDelete.length > 0) {
         this.deleteKey(keyToDelete[0])
       }
-      // this.deleteKey(this.applicationKeys.payload[index]);
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);
@@ -484,6 +491,36 @@ export default {
           this.admins = JSON.parse(JSON.stringify(object.payload.adminsById));
         }
 
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
+    },
+    addKeyObject: {
+      handler(object) {
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
+    },
+    addFeatureObject: {
+      handler(object) {
+        if (object.error) {
+          this.showSnackbar({
+            text: object.error
+          });
+        }
+      },
+      deep: true
+    },
+    addAdminObject: {
+      handler(object) {
         if (object.error) {
           this.showSnackbar({
             text: object.error
