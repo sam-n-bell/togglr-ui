@@ -117,7 +117,7 @@ export default {
   },
 async mounted() {
     try {
-      let sso = await this.$axios.get(`${constants.urlConstants.ssologin}`);
+      let sso = await this.$axios.get(`${constants.urlConstants.ssoLoginUrlGET}`);
       this.ssoUrl = sso.data
     } catch (err) {
       console.log(err);
