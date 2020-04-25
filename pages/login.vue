@@ -52,7 +52,6 @@
             class="mb-4 ml-3 mr-3"
             block
             @click="ssoLogin()"
-            :loading="loginInProgress"
           >SSO Login</v-btn>
         </v-card-actions>
       </v-card>
