@@ -100,7 +100,7 @@ export default {
         }
       });
     },
-    async ssoLogin(){
+    ssoLogin(){
       window.open(this.ssoUrl,"_self");
     },
     ...mapActions({
