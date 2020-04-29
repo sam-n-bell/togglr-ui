@@ -4,7 +4,6 @@
       <v-breadcrumbs-item nuxt to="/" exact :disabled="false">Home</v-breadcrumbs-item>
       <v-breadcrumbs-item>Application Details</v-breadcrumbs-item>
     </v-breadcrumbs>
-    {{isUserSuperAdmin}}
     <div>
       <div class="display-2 mb-4">{{ this.$route.query.appName }}</div>
       <LargeLoadingCard v-if="appDetails.loading" />
@@ -352,21 +351,6 @@ export default {
     },
     toggleFeature(feature) {
       this.updateApplication(feature);
-    },
-    removeAdmin(item) {
-      /* Commented out since Admins disabled
-      if (this.admins.length <= 1) {
-        this.showSnackbar({
-          text: "You must have at least one admin for this application"
-        });
-      } else {
-        this.deleteAdmin({
-          admin: item,
-          url: this.appDetails.payload["_links"].adminsById["href"],
-          refreshURL: this.storedApp._links["self"]["href"]
-        });
-      }
-      */
     },
     deleteAdminEvent(adminId) {
        this.deleteAdmin({admin: {id: adminId, appId: this.appDetails.payload.id}});
