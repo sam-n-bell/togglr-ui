@@ -4,11 +4,11 @@
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
-    @keydown.esc="hideEditFeatureDialog"
+    @keydown.esc="hideEditFeatureDialogEvent"
   >
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
-        <v-btn icon @click.native="hideEditFeatureDialog()">
+        <v-btn icon @click.native="hideEditFeatureDialogEvent()">
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ editFeatureDialog.feature.descr }}</v-toolbar-title>
@@ -88,7 +88,8 @@ export default {
     ruleSummary: "",
     configsLoaded: false,
     configsById: [],
-    currentKey: "Tst"
+    featureConfigs: [],
+    currentKey: ""
   }),
   computed: {
     editFeatureDialog() {
@@ -105,6 +106,12 @@ export default {
     }
   },
   methods: {
+    hideEditFeatureDialogEvent() {
+      // resetting the key so that the component doesn't try
+      // to create a new config if the dialog is reopened
+      this.currentKey = "";
+      this.hideEditFeatureDialog();
+    },
     deleteConfigClicked(keyName, item) {
       this.comboChanged(keyName);
       this.deleteConfig(item);
@@ -127,6 +134,7 @@ export default {
               summary += key.keyName + " " + config.configValue + ", ";
             });
 
+            // removes the last ',<space>' characters
             summary = summary.substring(0, summary.length - 2);
 
             summary += this.editFeatureDialog.feature.negation
@@ -187,7 +195,7 @@ export default {
     },
     featureConfigs: {
       handler(newConfigs, oldConfigs) {
-          if (this.configsLoaded) {
+          if (this.configsLoaded && this.currentKey !== "") {
           //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
@@ -197,7 +205,7 @@ export default {
               this.addConfig({
                 appId: this.editFeatureDialog.appDetails.id,
                 featureId: this.editFeatureDialog.feature.id,
-                keyName: keyToUpdate,
+                keyName: this.currentKey,
                 configValue: configToAdd[0]
               });
             }
