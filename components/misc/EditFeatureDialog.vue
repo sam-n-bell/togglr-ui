@@ -9,14 +9,9 @@
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
         <v-btn icon @click.native="hideEditFeatureDialog()">
-          <!-- @keyup.esc="hideEditFeatureDialog()" -->
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ editFeatureDialog.feature.descr }}</v-toolbar-title>
-        <!-- <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat @click.native="hideEditFeatureDialog()">Save</v-btn>
-        </v-toolbar-items>-->
       </v-toolbar>
 
       <v-container fluid>
@@ -32,16 +27,16 @@
 
       <v-divider></v-divider>
 
-      <v-card v-for="key in editFeatureDialog.appDetails.keysById" :key="key.keyName">
+        <v-card v-for="key in applicationKeys.payload" :key="key.keyName">
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>
-            <v-flex xs12 @click="comboChanged(key.keyName)">
+            <v-flex xs12>
               <v-combobox
                 :append="null"
                 :data-vv-name="key.keyName"
                 :error-messages="errors.collect(key.keyName)"
-                v-model="configsById"
+                v-model="featureConfigs"
                 :label="key.keyName"
                 @focus="comboChanged(key.keyName)"
                 @click="comboChanged(key.keyName)"
@@ -101,6 +96,12 @@ export default {
     },
     deleteConfigObject() {
       return this.$store.state.applications.deleteConfig;
+        },
+    applicationFeatureConfigs() {
+      return this.$store.state.applications.applicationFeatureConfigs;
+    },
+    applicationKeys () {
+      return this.$store.state.applications.applicationKeys;
     }
   },
   methods: {
@@ -111,16 +112,16 @@ export default {
     updateRuleSummary() {
       var summary = "";
 
-      this.editFeatureDialog.appDetails.keysById.forEach(key => {
+      this.applicationKeys.payload.forEach(key => {
         if (
-          this.editFeatureDialog.configsById &&
+          this.editFeatureDialog.configs &&
           this.editFeatureDialog.feature != null &&
           this.editFeatureDialog.feature.negation !== undefined
         ) {
-          var configs = this.editFeatureDialog.configsById.filter(
+          // for each key, match configs to keys based on the keyName in both properties
+          let configs = this.editFeatureDialog.configs.filter(
             config => config.keyName == key.keyName
-          );
-
+          )
           if (configs.length > 0) {
             configs.forEach(config => {
               summary += key.keyName + " " + config.configValue + ", ";
@@ -146,19 +147,22 @@ export default {
       addConfig: "applications/addConfig",
       deleteConfig: "applications/deleteConfig",
       toggleFeatureNegation: "notifications/toggleFeatureNegation",
-      showSnackbar: "notifications/showSnackbar"
+      showSnackbar: "notifications/showSnackbar",
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
+      showEditFeatureDialog: "notifications/showEditFeatureDialog"
+
     })
   },
   watch: {
     editFeatureDialog: {
       handler(object) {
         if (object.feature) {
-          if (object.feature.configsById) {
-            this.configsById = JSON.parse(
-              JSON.stringify(object.feature.configsById)
+          if (object.configs) {
+            this.featureConfigs = JSON.parse(
+              JSON.stringify(object.configs)
             );
           } else {
-            this.configsById = [];
+            this.featureConfigs = [];
           }
         }
 
@@ -166,6 +170,7 @@ export default {
           this.configsLoaded = false;
         }
 
+        this.configsLoaded = true;
         this.updateRuleSummary();
       },
       deep: true
@@ -180,9 +185,9 @@ export default {
       },
       deep: true
     },
-    configsById: {
+    featureConfigs: {
       handler(newConfigs, oldConfigs) {
-        if (this.configsLoaded) {
+          if (this.configsLoaded) {
           //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
@@ -192,12 +197,12 @@ export default {
               this.addConfig({
                 appId: this.editFeatureDialog.appDetails.id,
                 featureId: this.editFeatureDialog.feature.id,
-                keyName: this.currentKey,
+                keyName: keyToUpdate,
                 configValue: configToAdd[0]
               });
             }
           }
-        }
+        } 
         this.configsLoaded = true;
         this.updateRuleSummary();
       }
