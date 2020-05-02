@@ -284,7 +284,7 @@ export default {
   methods: {
     async openEditFeatureDialog(appAndFeatureObjects) {
       await this.showEditFeatureDialog({ app: appAndFeatureObjects.app, feature: appAndFeatureObjects.feature });
-      await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id})
+      await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id});
     },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
@@ -302,7 +302,7 @@ export default {
       this.updateApplication(feature);
     },
     addFeatureEvent() {
-      this.$validator.validate("featureName", this.featureName).then(async res => {
+      this.$validator.validate("featureName", this.featureName).then(res => {
         if (res) {
           this.addFeature({
             descr: this.featureName,
@@ -323,9 +323,9 @@ export default {
       }
     },
     addKeyEvent() {
-      this.$validator.validate("keyName", this.keyName).then(async res => {
+      this.$validator.validate("keyName", this.keyName).then(res => {
         if (res) {
-          await this.addKey({
+          this.addKey({
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
