@@ -27,7 +27,7 @@
 
       <v-divider></v-divider>
 
-        <v-card v-for="key in applicationKeys.payload" :key="key.keyName">
+      <v-card v-for="key in applicationKeys.payload" :key="key.keyName">
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>
@@ -97,7 +97,7 @@ export default {
     },
     deleteConfigObject() {
       return this.$store.state.applications.deleteConfig;
-        },
+    },
     applicationFeatureConfigs() {
       return this.$store.state.applications.applicationFeatureConfigs;
     },
@@ -196,20 +196,19 @@ export default {
     featureConfigs: {
       handler(newConfigs, oldConfigs) {
           if (this.configsLoaded && this.currentKey !== "") {
-          //Adding an admin
-          if (newConfigs.length > oldConfigs.length) {
-            var configToAdd = newConfigs.filter(
-              config => !oldConfigs.includes(config)
-            );
-            if (configToAdd.length > 0) {
-              this.addConfig({
-                appId: this.editFeatureDialog.appDetails.id,
-                featureId: this.editFeatureDialog.feature.id,
-                keyName: this.currentKey,
-                configValue: configToAdd[0]
-              });
+            if (newConfigs.length > oldConfigs.length) {
+              var configToAdd = newConfigs.filter(
+                config => !oldConfigs.includes(config)
+              );
+              if (configToAdd.length > 0) {
+                this.addConfig({
+                  appId: this.editFeatureDialog.appDetails.id,
+                  featureId: this.editFeatureDialog.feature.id,
+                  keyName: this.currentKey,
+                  configValue: configToAdd[0]
+                });
+              }
             }
-          }
         } 
         this.configsLoaded = true;
         this.updateRuleSummary();
