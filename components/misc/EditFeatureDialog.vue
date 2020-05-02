@@ -209,7 +209,7 @@ export default {
                 });
               }
             }
-        } 
+        }
         this.configsLoaded = true;
         this.updateRuleSummary();
       }
