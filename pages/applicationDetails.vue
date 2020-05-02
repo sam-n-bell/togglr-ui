@@ -48,7 +48,7 @@
 
           <span class="title mt-5">Features</span>
           <v-card flat>
-            <v-data-table :headers="featureHeaders" :items="appDetails.payload.featuresById">
+            <v-data-table :headers="featureHeaders" :items= "applicationFeatures.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.descr }}</td>
@@ -65,7 +65,7 @@
                       flat
                       color="primary"
                       class="pa-0 ma-0"
-                      @click="showEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
+                      @click="openEditFeatureDialog({ app: appDetails.payload, feature: props.item })"
                     >
                       <v-icon>edit</v-icon>
                     </v-btn>
@@ -78,7 +78,7 @@
                       description:'You are about to delete the feature ' + props.item.descr  + '. Are you sure?',
                       confirmBtnText:'Yep! Let\'s do this!',
                       cancelBtnText:'Nah, I\'m good.',
-                      confirmBtnAction: () => deleteFeatureEvent(props.index)}
+                      confirmBtnAction: () => deleteFeatureEvent(props.item.id)}
                       )"
                     >
                       <v-icon>delete</v-icon>
@@ -111,10 +111,9 @@
           </v-card>
 
           <div class="buffer"></div>
-
           <span class="title mt-5">Keys</span>
           <v-card flat>
-            <v-data-table :headers="keyHeaders" :items="appDetails.payload.keysById">
+            <v-data-table :headers="keyHeaders" :items="applicationKeys.payload">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.keyName }}</td>
@@ -128,7 +127,7 @@
                     description:'You are about to delete the key ' + props.item.keyName  + '. Are you sure?',
                     confirmBtnText:'Yep! Let\'s do this!',
                     cancelBtnText:'Nah, I\'m good.',
-                    confirmBtnAction: () => deleteKeyEvent(props.index)}
+                    confirmBtnAction: () => deleteKeyEvent(props.item.keyName)}
                     )"
                     >
                       <v-icon>delete</v-icon>
@@ -215,16 +214,18 @@ export default {
     } else {
       this.webhookUrl = this.storedApp.webhookUrl;
       this.retrieveApplicationDetails(this.storedApp.id);
+      this.retrieveApplicationFeatures(this.storedApp.id);
+      this.retrieveApplicationKeys(this.storedApp.id);
     }
   },
   data: () => ({
     featureHeaders: [
-      { text: "Feature", value: "descr", sortable: false },
-      { text: "Enabled", value: "enabled", sortable: false },
+      { text: "Feature", value: "descr", sortable: true },
+      { text: "Enabled", value: "enabled", sortable: true },
       { text: "Actions", align: "center", sortable: false }
     ],
     keyHeaders: [
-      { text: "Key", value: "keyName", sortable: false },
+      { text: "Key", value: "keyName", sortable: true },
       { text: "Actions", align: "center", sortable: false }
     ],
     admins: [],
@@ -261,6 +262,12 @@ export default {
     appDetails() {
       return this.$store.state.applications.appDetails;
     },
+    applicationFeatures () {
+      return this.$store.state.applications.applicationFeatures;
+    },
+    applicationKeys () {
+      return this.$store.state.applications.applicationKeys;
+    },
     deleteApplicationObject() {
       return this.$store.state.applications.deleteApplication;
     },
@@ -275,6 +282,10 @@ export default {
     })
   },
   methods: {
+    async openEditFeatureDialog(appAndFeatureObjects) {
+      await this.showEditFeatureDialog({ app: appAndFeatureObjects.app, feature: appAndFeatureObjects.feature });
+      await this.retrieveConfigsByApplicationAndFeature({appId: appAndFeatureObjects.app.id, featureId: appAndFeatureObjects.feature.id})
+    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending;
@@ -290,23 +301,8 @@ export default {
     toggleFeature(feature) {
       this.updateApplication(feature);
     },
-    removeAdmin(item) {
-      /* Commented out since Admins disabled
-      if (this.admins.length <= 1) {
-        this.showSnackbar({
-          text: "You must have at least one admin for this application"
-        });
-      } else {
-        this.deleteAdmin({
-          admin: item,
-          url: this.appDetails.payload["_links"].adminsById["href"],
-          refreshURL: this.storedApp._links["self"]["href"]
-        });
-      }
-      */
-    },
     addFeatureEvent() {
-      this.$validator.validate("featureName", this.featureName).then(res => {
+      this.$validator.validate("featureName", this.featureName).then(async res => {
         if (res) {
           this.addFeature({
             descr: this.featureName,
@@ -320,13 +316,16 @@ export default {
         }
       });
     },
-    deleteFeatureEvent(index) {
-      this.deleteFeature(this.appDetails.payload.featuresById[index]);
+    deleteFeatureEvent(featureId) {
+      let featureToDelete = this.applicationFeatures.payload.filter(feature => feature.id === featureId);
+      if (featureToDelete.length > 0) {
+        this.deleteFeature(featureToDelete[0])
+      }
     },
     addKeyEvent() {
-      this.$validator.validate("keyName", this.keyName).then(res => {
+      this.$validator.validate("keyName", this.keyName).then(async res => {
         if (res) {
-          this.addKey({
+          await this.addKey({
             keyName: this.keyName,
             appId: this.appDetails.payload.id
           });
@@ -335,8 +334,11 @@ export default {
         }
       });
     },
-    deleteKeyEvent(index) {
-      this.deleteKey(this.appDetails.payload.keysById[index]);
+    deleteKeyEvent(keyName) {
+      let keyToDelete = this.applicationKeys.payload.filter(key => key.keyName === keyName);
+      if (keyToDelete.length > 0) {
+        this.deleteKey(keyToDelete[0])
+      }
     },
     copyToClipboard(textToCopy) {
       this.$copyText(textToCopy);
@@ -354,6 +356,8 @@ export default {
     },
     ...mapActions({
       retrieveApplicationDetails: "applications/retrieveApplicationDetails",
+      retrieveApplicationFeatures: "applications/retrieveApplicationFeatures",
+      retrieveApplicationKeys: "applications/retrieveApplicationKeys",
       deleteApplication: "applications/deleteApplication",
       updateApplication: "applications/updateFeature",
       addAdmin: "applications/addAdmin",
@@ -365,7 +369,8 @@ export default {
       showSnackbar: "notifications/showSnackbar",
       showEditFeatureDialog: "notifications/showEditFeatureDialog",
       showConfirmCancelDialog: "notifications/showConfirmCancelDialog",
-      updateWebhook: "applications/updateWebhook"
+      updateWebhook: "applications/updateWebhook",
+      retrieveConfigsByApplicationAndFeature: "applications/retrieveConfigsByApplicationAndFeature",
     })
   },
   watch: {
@@ -444,7 +449,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+
 .buffer {
   height: 40px;
 }
+
 </style>
