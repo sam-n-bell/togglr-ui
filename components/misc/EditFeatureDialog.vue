@@ -9,14 +9,9 @@
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
         <v-btn icon @click.native="resetKeyNameTrackersHideDialog()">
-          <!-- @keyup.esc="hideEditFeatureDialog()" -->
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ editFeatureDialog.feature.descr }}</v-toolbar-title>
-        <!-- <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat @click.native="hideEditFeatureDialog()">Save</v-btn>
-        </v-toolbar-items>-->
       </v-toolbar>
 
       <v-container fluid>
@@ -198,7 +193,6 @@ export default {
         }
 
         if (this.configsLoaded) {
-          //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
               config => !oldConfigs.includes(config)
