@@ -289,6 +289,7 @@ export default {
     snackbar: false,
     adminId: "",
     adminKey: 0,
+    featureName: "",
     featureKey: 0,
     keyName: "",
     keyKey: 0,
