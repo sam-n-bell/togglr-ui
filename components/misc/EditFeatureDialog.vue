@@ -4,19 +4,14 @@
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
-    @keydown.esc="hideEditFeatureDialog"
+    @keydown.esc="resetKeyNameTrackersHideDialog"
   >
     <v-card v-if="editFeatureDialog.feature">
       <v-toolbar color="primary">
-        <v-btn icon @click.native="hideEditFeatureDialog()">
-          <!-- @keyup.esc="hideEditFeatureDialog()" -->
+        <v-btn icon @click.native="resetKeyNameTrackersHideDialog()">
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ editFeatureDialog.feature.descr }}</v-toolbar-title>
-        <!-- <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat @click.native="hideEditFeatureDialog()">Save</v-btn>
-        </v-toolbar-items>-->
       </v-toolbar>
 
       <v-container fluid>
@@ -29,21 +24,19 @@
           </v-flex>
         </v-layout>
       </v-container>
-
       <v-divider></v-divider>
-
       <v-card v-for="key in editFeatureDialog.appDetails.keysById" :key="key.keyName">
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>{{key.keyName}}</v-flex>
-            <v-flex xs12 @click="comboChanged(key.keyName)">
+            <v-flex xs12>
               <v-combobox
                 :append="null"
                 :data-vv-name="key.keyName"
                 :error-messages="errors.collect(key.keyName)"
                 v-model="configsById"
                 :label="key.keyName"
-                @focus="comboChanged(key.keyName)"
+                @keyup="trackKeyFieldLastTypedIn(key.keyName)"
                 @click="comboChanged(key.keyName)"
                 :append-icon="null"
                 chips
@@ -93,7 +86,8 @@ export default {
     ruleSummary: "",
     configsLoaded: false,
     configsById: [],
-    currentKey: "Tst"
+    currentKey: "",
+    lastKeyFieldEntered:""
   }),
   computed: {
     editFeatureDialog() {
@@ -104,6 +98,14 @@ export default {
     }
   },
   methods: {
+    resetKeyNameTrackersHideDialog () {
+      this.currentKey = "";
+      this.lastKeyFieldEntered = "";
+      this.hideEditFeatureDialog();
+    },
+    trackKeyFieldLastTypedIn (keyName) {
+      this.lastKeyFieldEntered = keyName;
+    },
     deleteConfigClicked(keyName, item) {
       this.comboChanged(keyName);
       this.deleteConfig(item);
@@ -182,8 +184,15 @@ export default {
     },
     configsById: {
       handler(newConfigs, oldConfigs) {
+
+        // below if condition handles scenario where user will type in one combobox and then click into another
+        // it makes sure the config is saved to the correct rule
+        let keyToUpdate = this.currentKey;
+        if (this.lastKeyFieldEntered !== this.currentKey) {
+          keyToUpdate = this.lastKeyFieldEntered;
+        }
+
         if (this.configsLoaded) {
-          //Adding an admin
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
               config => !oldConfigs.includes(config)
@@ -192,7 +201,7 @@ export default {
               this.addConfig({
                 appId: this.editFeatureDialog.appDetails.id,
                 featureId: this.editFeatureDialog.feature.id,
-                keyName: this.currentKey,
+                keyName: keyToUpdate,
                 configValue: configToAdd[0]
               });
             }
