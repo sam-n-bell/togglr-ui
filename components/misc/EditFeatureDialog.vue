@@ -177,7 +177,6 @@ export default {
     },
     configsById: {
       handler(newConfigs, oldConfigs) {
-
         if (this.configsLoaded) {
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
