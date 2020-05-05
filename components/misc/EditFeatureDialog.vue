@@ -189,7 +189,7 @@ export default {
         // it makes sure the config is saved to the correct rule
         let keyToUpdate = this.currentKey;
         if (this.lastKeyFieldEntered !== this.currentKey) {
-          keyToUpdate = this.lastKeyFieldEntered
+          keyToUpdate = this.lastKeyFieldEntered;
         }
 
         if (this.configsLoaded) {
@@ -207,7 +207,6 @@ export default {
             }
           }
         }
-
         this.configsLoaded = true;
         this.updateRuleSummary();
       }
