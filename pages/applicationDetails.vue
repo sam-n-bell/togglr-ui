@@ -176,7 +176,7 @@
                       @click="showConfirmCancelDialog(
                     {title:'Remove Admin',
                     description:'You are about to remove ' +  props.item.id + ' from ' +  appDetails.payload.name+ '. Are you sure?',
-                    confirmBtnText: 'Yep! Let\'s do this!',//'Yep! Let\'s do this!',
+                    confirmBtnText: 'Yep! Let\'s do this!',
                     cancelBtnText:'Nah, I\'m good.',
                     confirmBtnAction: () => deleteAdminEvent(props.item.id)}
                     )"
