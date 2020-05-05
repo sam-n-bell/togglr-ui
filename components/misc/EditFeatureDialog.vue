@@ -37,7 +37,6 @@
                 v-model="configsById"
                 :label="key.keyName"
                 @keyup="trackKeyFieldLastTypedIn(key.keyName)"
-                @click="comboChanged(key.keyName)"
                 :append-icon="null"
                 chips
                 solo
@@ -86,7 +85,6 @@ export default {
     ruleSummary: "",
     configsLoaded: false,
     configsById: [],
-    currentKey: "",
     lastKeyFieldEntered:""
   }),
   computed: {
@@ -99,7 +97,6 @@ export default {
   },
   methods: {
     resetKeyNameTrackersHideDialog () {
-      this.currentKey = "";
       this.lastKeyFieldEntered = "";
       this.hideEditFeatureDialog();
     },
@@ -107,7 +104,6 @@ export default {
       this.lastKeyFieldEntered = keyName;
     },
     deleteConfigClicked(keyName, item) {
-      this.comboChanged(keyName);
       this.deleteConfig(item);
     },
     updateRuleSummary() {
@@ -139,9 +135,6 @@ export default {
       });
 
       this.ruleSummary = summary;
-    },
-    comboChanged(keyName) {
-      this.currentKey = keyName;
     },
     ...mapActions({
       hideEditFeatureDialog: "notifications/hideEditFeatureDialog",
@@ -185,13 +178,6 @@ export default {
     configsById: {
       handler(newConfigs, oldConfigs) {
 
-        // below if condition handles scenario where user will type in one combobox and then click into another
-        // it makes sure the config is saved to the correct rule
-        let keyToUpdate = this.currentKey;
-        if (this.lastKeyFieldEntered !== this.currentKey) {
-          keyToUpdate = this.lastKeyFieldEntered;
-        }
-
         if (this.configsLoaded) {
           if (newConfigs.length > oldConfigs.length) {
             var configToAdd = newConfigs.filter(
@@ -201,7 +187,7 @@ export default {
               this.addConfig({
                 appId: this.editFeatureDialog.appDetails.id,
                 featureId: this.editFeatureDialog.feature.id,
-                keyName: keyToUpdate,
+                keyName: this.lastKeyFieldEntered,
                 configValue: configToAdd[0]
               });
             }
