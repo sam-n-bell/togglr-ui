@@ -445,7 +445,7 @@ const mutations = {
     },
     addAdminSuccess(state, admin) {
         state.appDetails.payload.adminsById.push(admin);
-        state.addAdmin.payload = payload;
+        state.addAdmin.payload = admin;
         state.addAdmin.loading = false;
         state.addAdmin.error = null;
     },
