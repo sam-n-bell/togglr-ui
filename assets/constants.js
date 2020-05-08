@@ -22,7 +22,7 @@ var urlConstants = Object.freeze({
     configsEntity: `${baseURL}configsEntities/`,
     login: `${baseURL}login`,
     logout: `${baseURL}logout`,
-    ssoLoginUrlGET: `${baseURL}ssologin`
+    oauthLoginUrlGET: `${baseURL}oauth/login`
 });
 
 var disallowedChars = Object.freeze(["_", "/"]);
