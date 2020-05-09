@@ -11,11 +11,16 @@ export default function(context) {
 
     if (!context.store.getters["authentication/isUserAuthenticated"]) {
 
-        const jwt = Cookie.get(constants.systemConstants.authCookieIdentifer);
+        const jwt = Cookie.get(constants.systemConstants.togglrAuthCookieIdentifer);
+        const oauthBearer = Cookie.get(constants.systemConstants.oauthCookieIdentifier);
+        
+        if (oauthBearer) {
+            context.$axios.defaults.headers.common[constants.systemConstants.oauthHeader] = 'Bearer ' + oauthBearer
+        }
 
         if (jwt) {
             context.$axios.defaults.headers.common[
-                constants.systemConstants.authCookieIdentifer
+                constants.systemConstants.togglrAuthCookieIdentifer
             ] = jwt;
 
             context.store.commit("authentication/saveJWT", jwt);
@@ -25,11 +30,17 @@ export default function(context) {
         }
     } else {
 
-        const jwt = Cookie.get(constants.systemConstants.authCookieIdentifer);
+        const jwt = Cookie.get(constants.systemConstants.togglrAuthCookieIdentifer);
 
+        const oauthBearer = Cookie.get(constants.systemConstants.oauthCookieIdentifier);
+        
+        if (oauthBearer) {
+            context.$axios.defaults.headers.common[constants.systemConstants.oauthHeader] = 'Bearer ' + oauthBearer
+        }
+        
         if (jwt) {
             context.$axios.defaults.headers.common[
-                constants.systemConstants.authCookieIdentifer
+                constants.systemConstants.togglrAuthCookieIdentifer
             ] = jwt;
 
             context.store.commit("authentication/saveJWT", jwt);

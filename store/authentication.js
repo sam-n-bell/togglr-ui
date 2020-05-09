@@ -18,7 +18,7 @@ const getters = {
     isUserAuthenticated: state => {
 
         const token = Cookie.get(
-            constants.systemConstants.authCookieIdentifer
+            constants.systemConstants.togglrAuthCookieIdentifer
         );
 
         return !!state.user || !!token;
@@ -75,7 +75,6 @@ const actions = {
             commit("logout");
         } catch (error) {
             commit("logout");
-            console.log("Logout failure:", error.message);
         }
     },
     showLogoutDialog({
@@ -93,7 +92,6 @@ const actions = {
 const mutations = {
     saveJWT(state, jwt) {
         state.jwt = jwt;
-
         let decoded = jsonwebtoken.decode(jwt);
         state.user = decoded.details.username;
     },
@@ -122,6 +120,10 @@ const mutations = {
         state.logoutDialogShowing = false;
         state.user = null;
         state.jwt = null;
+        Cookie.remove(constants.systemConstants.togglrAuthCookieIdentifer, {path: '/'});
+        Cookie.remove(constants.systemConstants.oauthCookieIdentifier, {path:'/'});
+        delete this.$axios.defaults.headers.common[constants.systemConstants.oauthHeader];
+        delete this.$axios.defaults.headers.common[constants.systemConstants.togglrAuthCookieIdentifer];
     },
     showLogoutDialog(state) {
         state.logoutDialogShowing = true;

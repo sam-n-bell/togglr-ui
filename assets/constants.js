@@ -1,7 +1,9 @@
 var systemConstants = Object.freeze({
     appName: "Togglr",
     userSettingsCookieName: "togglr-settings-token",
-    authCookieIdentifer: "X-TOGGLR-TOKEN",
+    togglrAuthCookieIdentifer: "X-TOGGLR-TOKEN",
+    oauthCookieIdentifier: "OAUTH-TOKEN",
+    oauthHeader: "Authorization",
     featureFlagAppId: 3,
     version: "0.9.0"
 });
@@ -19,7 +21,8 @@ var urlConstants = Object.freeze({
     adminEntity: `${baseURL}adminsEntities/`,
     configsEntity: `${baseURL}configsEntities/`,
     login: `${baseURL}login`,
-    logout: `${baseURL}logout`
+    logout: `${baseURL}logout`,
+    oauthLoginUrlGET: `${baseURL}oauth/login`
 });
 
 var disallowedChars = Object.freeze(["_", "/"]);

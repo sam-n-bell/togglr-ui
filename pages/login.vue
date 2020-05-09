@@ -46,8 +46,21 @@
             :loading="loginInProgress"
           >Log In</v-btn>
         </v-card-actions>
+        <v-card-actions class="card-actions" v-if="oauthUrl.trim() !== ''">
+          <v-btn
+            color="primary"
+            class="mb-4 ml-3 mr-3"
+            block
+            @click="ssoLogin()"
+            :loading="oauthLoginLoading"
+          >Sign In With SSO</v-btn>
+        </v-card-actions>
       </v-card>
+
     </v-flex>
+
+
+
   </v-layout>
 </template>
 
@@ -61,7 +74,9 @@ export default {
   data: () => ({
     username: "",
     password: "",
-    appName: constants.systemConstants.appName
+    appName: constants.systemConstants.appName,
+    oauthUrl: "",
+    oauthLoginLoading: false
   }),
   computed: {
     loginInProgress() {
@@ -74,6 +89,8 @@ export default {
       isUserAuthenticated: "authentication/isUserAuthenticated"
     })
   },
+
+
   methods: {
     attemptLogin() {
       this.$validator.validateAll().then(res => {
@@ -85,6 +102,11 @@ export default {
         }
       });
     },
+    ssoLogin(){
+      this.errors.clear();
+      this.oauthLoginLoading = true;
+      window.open(this.oauthUrl,"_self");
+    },
     ...mapActions({
       login: "authentication/login"
     })
@@ -95,8 +117,17 @@ export default {
         this.$router.push("/");
       }
     }
+  },
+async mounted() {
+    try {
+      let url = await this.$axios.get(`${constants.urlConstants.oauthLoginUrlGET}`);
+      this.oauthUrl = url.data
+    } catch (err) {
+      console.error(`Had an issue getting oauth login url from the API: ${err.message}`);
+    }
   }
-};
+
+}
 </script>
 
 <style lang="scss" scoped>
