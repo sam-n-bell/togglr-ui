@@ -56,11 +56,7 @@
           >Sign In With SSO</v-btn>
         </v-card-actions>
       </v-card>
-
     </v-flex>
-
-
-
   </v-layout>
 </template>
 
