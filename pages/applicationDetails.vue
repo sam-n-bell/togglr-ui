@@ -59,6 +59,12 @@
                       @change="toggleFeature(props.item)"
                     ></v-switch>
                   </td>
+                  <td>
+                    <span v-if="props.item.lastToggled">{{ $moment(props.item.lastToggled).format('M/D/YYYY h:mm a')}}</span>
+                  </td>
+                  <td>
+                    {{ props.item.toggledBy }}
+                  </td>
                   <td class="text-xs-center">
                     <v-btn
                       slot="activator"
@@ -221,6 +227,8 @@ export default {
     featureHeaders: [
       { text: "Feature", value: "descr", sortable: false },
       { text: "Enabled", value: "enabled", sortable: false },
+      { text: "Last Toggled", value: "lastToggled", sortable: true },
+      { text: "Toggled By", value: "toggledBy", sortable: true },
       { text: "Actions", align: "center", sortable: false }
     ],
     keyHeaders: [
@@ -270,6 +278,9 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
+    user() {
+      return this.$store.state.authentication.user;
+    },
     ...mapGetters({
       getApplicationDetails: "applications/getApplicationDetails"
     })
@@ -289,6 +300,7 @@ export default {
     },
     toggleFeature(feature) {
       this.updateApplication(feature);
+      this.retrieveApplicationDetails(this.storedApp.id);
     },
     removeAdmin(item) {
       /* Commented out since Admins disabled

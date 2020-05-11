@@ -65,7 +65,8 @@ module.exports = {
     modules: [
         // Doc: https://github.com/nuxt-community/axios-module#usage
         "@nuxtjs/proxy",
-        "@nuxtjs/axios"
+        "@nuxtjs/axios",
+        "@nuxtjs/moment"
     ],
     /*
      ** Axios module configuration

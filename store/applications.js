@@ -153,13 +153,17 @@ const actions = {
         }
     },
     async updateFeature({
-        commit
+        commit, rootState
     }, feature) {
         commit("updateFeature");
 
         var unchainedFeature = {
-            active: !feature.active
+            active: !feature.active,
+            lastToggled: Date.now(),
+            toggledBy: rootState.authentication.user
         };
+
+        console.log(unchainedFeature);
 
         try {
             const details = await this.$axios.$patch(
