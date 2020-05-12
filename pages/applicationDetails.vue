@@ -278,9 +278,6 @@ export default {
     updateWebhookObject() {
       return this.$store.state.applications.updateWebhookObject;
     },
-    user() {
-      return this.$store.state.authentication.user;
-    },
     ...mapGetters({
       getApplicationDetails: "applications/getApplicationDetails"
     })

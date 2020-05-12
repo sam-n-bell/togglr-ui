@@ -174,7 +174,6 @@ const actions = {
                                             lastToggled: unchainedFeature.lastToggled, 
                                             toggledBy: unchainedFeature.toggledBy});
         } catch (error) {
-            console.log(error);
             commit("updateFeatureFailure", error.message);
         }
     },
