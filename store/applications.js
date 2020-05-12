@@ -163,15 +163,18 @@ const actions = {
             toggledBy: rootState.authentication.user
         };
 
-        console.log(unchainedFeature);
-
         try {
             const details = await this.$axios.$patch(
                 constants.urlConstants.updateFeature + feature.id,
                 unchainedFeature
             );
-            commit("updateFeatureSuccess", feature);
+
+            commit("updateFeatureSuccess", {feature: feature, 
+                                            active: unchainedFeature.active, 
+                                            lastToggled: unchainedFeature.lastToggled, 
+                                            toggledBy: unchainedFeature.toggledBy});
         } catch (error) {
+            console.log(error);
             commit("updateFeatureFailure", error.message);
         }
     },
@@ -430,9 +433,20 @@ const mutations = {
         state.updateFeature.loading = true;
         state.updateFeature.error = null;
     },
-    updateFeatureSuccess(state, feature) {
-        feature.active = !feature.active;
-        state.updateFeature.payload = response;
+    updateFeatureSuccess(state, payload) {
+        var index = state.appDetails.payload.featuresById.findIndex(
+            feature => feature.id === payload.feature.id
+        );
+
+        var feature = null;
+        if (index > -1) {
+            feature = state.appDetails.payload.featuresById[index];
+            feature.toggledBy = payload.toggledBy;
+            feature.active = payload.active;
+            feature.lastToggled = payload.lastToggled;
+        }
+
+        state.updateFeature.payload = feature;
         state.updateFeature.loading = false;
         state.updateFeature.error = null;
     },

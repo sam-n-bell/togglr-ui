@@ -227,8 +227,8 @@ export default {
     featureHeaders: [
       { text: "Feature", value: "descr", sortable: false },
       { text: "Enabled", value: "enabled", sortable: false },
-      { text: "Last Toggled", value: "lastToggled", sortable: true },
-      { text: "Toggled By", value: "toggledBy", sortable: true },
+      { text: "Last Toggled", value: "lastToggled", sortable: false },
+      { text: "Toggled By", value: "toggledBy", sortable: false },
       { text: "Actions", align: "center", sortable: false }
     ],
     keyHeaders: [
@@ -300,7 +300,6 @@ export default {
     },
     toggleFeature(feature) {
       this.updateApplication(feature);
-      this.retrieveApplicationDetails(this.storedApp.id);
     },
     removeAdmin(item) {
       /* Commented out since Admins disabled
