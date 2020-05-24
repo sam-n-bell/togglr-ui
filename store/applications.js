@@ -196,7 +196,7 @@ const actions = {
             }, {
                 root: true
             });
-            commit("addAdminFailure", error.message);
+            commit("addAdminFailure", message);
         }
     },
     async addFeature({
@@ -262,7 +262,7 @@ const actions = {
             }, {
                 root: true
             });
-            commit("addKeyFailure", error.message);
+            commit("addKeyFailure", message);
         }
     },
     async addConfig({
@@ -296,7 +296,7 @@ const actions = {
             }, {
                 root: true
             });
-            commit("addConfigFailure", error.message);
+            commit("addConfigFailure", message);
         }
     },
     async deleteApplication({
