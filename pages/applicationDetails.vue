@@ -357,6 +357,7 @@ export default {
       deleteApplication: "applications/deleteApplication",
       updateApplication: "applications/updateFeature",
       addAdmin: "applications/addAdmin",
+      addFeature: "applications/addFeature",
       deleteAdmin: "applications/deleteAdmin",
       addFeature: "applications/addFeature",
       deleteFeature: "applications/deleteFeature",

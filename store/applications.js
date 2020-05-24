@@ -135,7 +135,11 @@ const actions = {
             );
             commit("createApplicationSuccess", response);
         } catch (error) {
-            commit("createApplicationFailure", error.message);
+            let message = error.message;
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            commit("createApplicationFailure", message);
         }
     },
     async retrieveApplicationDetails({
@@ -182,6 +186,16 @@ const actions = {
             );
             commit("addAdminSuccess", details);
         } catch (error) {
+            let message = error.message;
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            dispatch("notifications/showSnackbar", {
+                text: `Error:  ${message}`,
+                timeout: 4500
+            }, {
+                root: true
+            });
             commit("addAdminFailure", error.message);
         }
     },
@@ -204,7 +218,17 @@ const actions = {
             });
 
         } catch (error) {
-            commit("addFeatureFailure", error.message);
+            let message = error.message;
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            dispatch("notifications/showSnackbar", {
+                text: `Error:  ${message}`,
+                timeout: 4500
+            }, {
+                root: true
+            });
+            commit("addFeatureFailure", message);
         }
     },
     async addKey({
@@ -228,6 +252,16 @@ const actions = {
             });
 
         } catch (error) {
+            let message = error.message;
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            dispatch("notifications/showSnackbar", {
+                text: `Error:  ${message}`,
+                timeout: 4500
+            }, {
+                root: true
+            });
             commit("addKeyFailure", error.message);
         }
     },
@@ -252,6 +286,16 @@ const actions = {
                 root: true
             });
         } catch (error) {
+            let message = error.message;
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            dispatch("notifications/showSnackbar", {
+                text: `Error:  ${message}`,
+                timeout: 4500
+            }, {
+                root: true
+            });
             commit("addConfigFailure", error.message);
         }
     },

@@ -26,8 +26,8 @@ export default function(context) {
 
     context.$axios.onError(error => {
         const code = parseInt(error.response && error.response.status);
-        if (code === 400) {
-            context.redirect("/400");
+        if (code > 400) {
+            context.redirect("/error");
         }
     });
 }
