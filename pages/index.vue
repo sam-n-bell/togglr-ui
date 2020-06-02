@@ -30,7 +30,7 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap v-else mt-4>
-      <v-flex v-if="applications.payload.length === 0 || filteredData.length === 0" text-xs-center>No applications available. Click the button in the top right to add applications.</v-flex>
+      <v-flex v-if="filteredData.length === 0" text-xs-center>No applications available. Click the button in the top right to add applications.</v-flex>
       <v-flex xs12 md4 pa-2 v-for="app in filteredData" :key="app.id">
           <ApplicationPreviewCard :app="app" />
       </v-flex>
